@@ -1,0 +1,49 @@
+{
+  "name": "trackmyswing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "dev-server": "node ./src/server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SwingCoder911/trackmyswing.git"
+  },
+  "author": "Andrew Sunada <andrew@andrewsunada.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SwingCoder911/trackmyswing/issues"
+  },
+  "homepage": "https://github.com/SwingCoder911/trackmyswing#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "axios": "^0.16.2",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "es2015": "0.0.0",
+    "express": "^4.15.4",
+    "file-loader": "^0.11.2",
+    "fs": "0.0.1-security",
+    "mysql": "^2.14.1",
+    "net": "^1.0.2",
+    "node-sass": "^4.5.3",
+    "path": "^0.12.7",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-hot-loader": "^1.3.1",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "resolve-url-loader": "^2.1.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2",
+    "url-loader": "^0.5.9",
+    "webpack": "^3.5.6"
+  }
+}
