@@ -21,23 +21,18 @@ class DB{
         this.Authenticate();
     }
     Authenticate(){
-        firebase.auth().createUserWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911").catch(function(error) {
-        // Handle Errors here.
-        console.log(error)
-        // ...
-        });
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                console.log("Logged in: ", user);
-            } else {
-                // User is signed out.
-                // ...
-            }
-        });
+        firebase.auth().signInWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911")
+            .catch(function(sError) {
+                console.log("Sign in error: ", sError)
+                firebase.auth().createUserWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911")
+                    .catch((cError) => {
+                        console.log("Error with auth: ", cError);
+                    });
+            });
     }
    
     WriteDancerToFirebase(wscid, dancer){
-        this.Con.ref('dancers/' + wscid).set(JSON.parse(dancer));
+        this.Con.ref('dancers/' + wscid).set(dancer);
     };
 };
 

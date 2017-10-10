@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack",
-    "dev-server": "node ./src/server/server.js"
+    "dev-server": "node ./src/server/server.js",
+    "backup-dancers": "node ./src/server/scripts/processDancers.js"
   },
   "repository": {
     "type": "git",

@@ -9,7 +9,8 @@ class WSDC{
         let dPromise = new Promise((resolve, reject) => {
             axios.get(this.DancersUrl)
                 .then((results) => {
-                    resolve(results);
+
+                    resolve(results.data);
                 })
                 .catch((error) => {
                     reject(error);
@@ -21,7 +22,9 @@ class WSDC{
         let dPromise = new Promise((resolve, reject) => {
             axios.post(this.DancerUrl, {q: wscid})
                 .then((dancerResult) => {
-                    resolve(CircularJson.stringify(dancerResult.data));
+                    let serialized = CircularJson.stringify(dancerResult.data);
+                    let parsed = CircularJson.parse(serialized);
+                    resolve(parsed);                    
                 })
                 .catch((error) => {
                     console.log(error);

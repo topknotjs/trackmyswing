@@ -4,6 +4,7 @@ let dancers = require('./handlers/dancers');
 let wsdc = require ('./handlers/wsdc');
 let DB = require('./handlers/db');
 let fDB = require('./handlers/fireDB');
+let dancerDef = require('./definitions/Dancer');
 
 let app = express();
 let wsdcAPI = wsdc();
@@ -24,11 +25,20 @@ app.get('/dancers/:division/:role', function(req, res){
     });
 });
 
-app.get('/dancer/:wscid', function(req, res){
+app.get('/dancer/store/:wscid', function(req, res){
     wsdcAPI.GetDancer(req.params.wscid)
         .then((result) => {
-            fDB.WriteDancerToFirebase(req.params.wscid, result);
-            res.send(result);
+            let newDancer = new dancerDef(result);
+            fireDB.WriteDancerToFirebase(req.params.wscid, newDancer);
+            res.send(newDancer);
+        });
+});
+
+app.get('/dancer/find/:wscid', function(req, res){
+    wsdcAPI.GetDancer(req.params.wscid)
+        .then((result) => {
+            let newDancer = new dancerDef(result);
+            res.send({constructed: newDancer});
         });
 });
 
