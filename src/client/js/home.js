@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import API from 'api';
+import API from './api';
 require('../views/home.html');
 
 class App extends Component{
-    constructor(){
+    constructor(props){
+        super(props);
         this.state = {
             dancers: []
         };

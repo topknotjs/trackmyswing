@@ -1,8 +1,12 @@
 let DB = require('./db');
 let db = new DB();
 //TODO: Setup as GraphQL API to a firebase db
-let exportable = {
-    getDancers: function(division, role){
+class Dancers{
+    constructor(){
+
+    }
+    GetDBDancers(){
+        //Move this into the database class
         let promise = new Promise((resolve, reject) => {
             let sql = `SELECT * FROM dancers where division='${division}' and role='${role}' order by wsdc desc`;
             let sqlPromise = db.executeQuery(sql);
@@ -15,5 +19,7 @@ let exportable = {
         });        
         return promise;
     }
+}
+module.exports = function(){
+    return new Dancers();
 };
-module.exports = exportable;
