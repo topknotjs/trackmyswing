@@ -1,5 +1,6 @@
 let dbConfig = require('./dbConfig');
 let firebase = require('firebase');
+let DancerDef = require('../definitions/Dancer');
 
 class DB{
     constructor(){
@@ -33,7 +34,43 @@ class DB{
    
     WriteDancerToFirebase(wscid, dancer){
         this.Con.ref('dancers/' + wscid).set(dancer);
-    };
+    }
+    GetDancersByDivision(division){
+        let ref = this.Con.ref('dancers');
+        ref.orderByChild('Division').equalTo('allstar').once('value')
+            .then((snapshot) => {
+                console.log(snapshot.val());
+            });
+    }
+    //Create synthetic indexes for the division/role/qualifies
+    GetDancersByDivisionRoleQualifies(divisionInput, roleInput, qualifies){        
+        return new Promise((resolve, reject) => {
+            let division = DancerDef.SanitizeDivision(divisionInput),
+                role = DancerDef.SanitizeRole(roleInput);
+            if(division === null){
+                reject("Bad division input.");
+                return;
+            }
+            if(role === null){
+                reject("Bad role input.");
+                return;
+            }
+            let key = `${division}-${role}${(qualifies) ? '-q' : ''}`;
+            let ref = this.Con.ref('dancers');
+            ref.orderByChild('DivisionRoleQualifies').equalTo(key).once('value')
+                .then((snapshot) => {
+                    let compMap = snapshot.val(), dancersArray = [];
+                    for(let key in compMap){
+                        dancersArray.push(new DancerDef(compMap[key]));
+                    }
+                    resolve(dancersArray);
+                })
+                .catch((error) => {
+                    console.log("Error: ", error);
+                    reject(error);
+                });
+        });        
+    }
 };
 
 module.exports = function(){

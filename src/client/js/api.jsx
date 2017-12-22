@@ -8,11 +8,11 @@ export default class API{
         }
         return axios(config);
     }
-    GetDancers(){
+    GetDancers(division, role){
         let dancersPromise = new Promise((resolve, reject) => {
-            this.call('/api/dancers/allstar/leader', 'GET')
+            this.call(`/api/dancers/${division}/${role}`, 'GET')
             .then((result) => {
-                resolve(result);
+                resolve(result.data);
             })
             .catch((error) => {
                 reject(error);  

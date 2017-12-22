@@ -4,7 +4,7 @@ var path = require('path');
 var BUILD_DIR = path.resolve(__dirname, 'public');
 module.exports = {
     entry: {
-        home: "./src/client/js/home.js"
+        home: "./src/client/js/home.jsx"
     },
     output: {
         path: BUILD_DIR,

@@ -10283,6 +10283,10 @@ var _api = __webpack_require__(191);
 
 var _api2 = _interopRequireDefault(_api);
 
+var _Dancers = __webpack_require__(211);
+
+var _Dancers2 = _interopRequireDefault(_Dancers);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10291,7 +10295,12 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-__webpack_require__(211);
+__webpack_require__(212);
+
+var DIVISIONS = [{ Key: 'champion', Label: 'Champions' }, { Key: 'allstar', Label: 'All-Stars' }, { Key: 'advanced', Label: 'Advanced' }, { Key: 'intermediate', Label: 'Intermediate' }, { Key: 'novice', Label: 'Novice' }, { Key: 'newcomer', Label: 'Newcomer' }];
+var ROLES = [{ Key: 'leader', Label: 'Leader' }, { Key: 'follower', Label: 'Follower' }];
+
+var ApiService = new _api2.default();
 
 var App = function (_Component) {
     _inherits(App, _Component);
@@ -10302,23 +10311,51 @@ var App = function (_Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.state = {
+            form: {
+                division: '',
+                role: ''
+            },
             dancers: []
         };
-        _this.api = new _api2.default();
+        _this.onDivisionChange = _this.onDivisionChange.bind(_this);
+        _this.onRoleChange = _this.onRoleChange.bind(_this);
+        _this.onSubmitClicked = _this.onSubmitClicked.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
-        key: 'componentWillMount',
-        value: function componentWillMount() {
+        key: 'searchDancers',
+        value: function searchDancers() {
             var _this2 = this;
 
-            this.api.GetDancers().then(function (results) {
+            var _state$form = this.state.form,
+                division = _state$form.division,
+                role = _state$form.role;
+
+            ApiService.GetDancers(division, role).then(function (results) {
                 _this2.setState({ dancers: results });
-                console.log(results);
             }).catch(function (error) {
                 console.log("Api error: ", error);
             });
+        }
+    }, {
+        key: 'onDivisionChange',
+        value: function onDivisionChange($event) {
+            $event.preventDefault();
+            var form = this.state.form;
+            this.setState({ form: Object.assign({}, form, { division: $event.target.value }) });
+        }
+    }, {
+        key: 'onRoleChange',
+        value: function onRoleChange($event) {
+            $event.preventDefault();
+            var form = this.state.form;
+            this.setState({ form: Object.assign({}, form, { role: $event.target.value }) });
+        }
+    }, {
+        key: 'onSubmitClicked',
+        value: function onSubmitClicked() {
+            this.searchDancers();
         }
     }, {
         key: 'render',
@@ -10333,6 +10370,60 @@ var App = function (_Component) {
                         'h1',
                         null,
                         'Find my Strictly'
+                    )
+                ),
+                _react2.default.createElement(
+                    'section',
+                    { className: 'content-area' },
+                    _react2.default.createElement(
+                        'select',
+                        { id: 'division', onChange: this.onDivisionChange },
+                        _react2.default.createElement(
+                            'option',
+                            { value: '' },
+                            'Select a division...'
+                        ),
+                        DIVISIONS.map(function (division, index) {
+                            return _react2.default.createElement(
+                                'option',
+                                { key: index, value: division.Key },
+                                division.Label
+                            );
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'select',
+                        { id: 'role', onChange: this.onRoleChange },
+                        _react2.default.createElement(
+                            'option',
+                            { value: '' },
+                            'Select a role...'
+                        ),
+                        ROLES.map(function (role, index) {
+                            return _react2.default.createElement(
+                                'option',
+                                { key: index, value: role.Key },
+                                role.Label
+                            );
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.onSubmitClicked },
+                        'Submit'
+                    ),
+                    _react2.default.createElement(
+                        'ul',
+                        { className: 'dancer-list' },
+                        this.state.dancers.map(function (dancer) {
+                            return _react2.default.createElement(
+                                'li',
+                                null,
+                                dancer.FirstName,
+                                ' ',
+                                dancer.LastName
+                            );
+                        })
                     )
                 )
             );
@@ -22856,12 +22947,12 @@ var API = function () {
         }
     }, {
         key: 'GetDancers',
-        value: function GetDancers() {
+        value: function GetDancers(division, role) {
             var _this = this;
 
             var dancersPromise = new Promise(function (resolve, reject) {
-                _this.call('/api/dancers/allstar/leader', 'GET').then(function (result) {
-                    resolve(result);
+                _this.call('/api/dancers/' + division + '/' + role, 'GET').then(function (result) {
+                    resolve(result.data);
                 }).catch(function (error) {
                     reject(error);
                 });
@@ -23751,6 +23842,33 @@ module.exports = function spread(callback) {
 
 /***/ }),
 /* 211 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Dancer = function Dancer(data) {
+    _classCallCheck(this, Dancer);
+
+    this.FirstName = data.FirstName;
+    this.LastName = data.LastName;
+    this.WSCID = data.WSCID;
+    this.CurrentPoints = data.CurrentPoints;
+    this.Division = data.Division;
+    this.Role = data.Role;
+    this.QualifiesforNextDivision = data.QualifiesforNextDivision;
+};
+
+exports.default = Dancer;
+
+/***/ }),
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

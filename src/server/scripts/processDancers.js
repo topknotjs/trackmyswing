@@ -38,8 +38,8 @@ let processDancerValues = (results) => {
             console.log("Exit 1");
             return;
         }else if((i + step) >= results.length){
-            console.log("Exit 2");
-            run(i, results.length - 1);
+            console.log(`Exit 2 - [i: ${i} step: ${step} length: ${results.length}]`);
+            run(i, results.length - i);
             return;
         }
         console.log(`Fetching: ${i} - ${i + step}`);
@@ -51,7 +51,7 @@ let processDancerValues = (results) => {
             });
         
     };
-    run(0, 10);
+    run(0, 15);
 };
 
 wsdc.GetDancers()
