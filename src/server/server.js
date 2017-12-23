@@ -69,6 +69,7 @@ app.get('/api/facebook/', function(req, res){
 });
 app.get('/api/facebookredirect', function(req, res){
     console.log(req, res);
+    res.send({response: req});
 });
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
