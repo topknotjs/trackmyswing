@@ -18,7 +18,9 @@
     "url": "https://github.com/SwingCoder911/trackmyswing/issues"
   },
   "homepage": "https://github.com/SwingCoder911/trackmyswing#readme",
-  "dependencies": {},
+  "dependencies": {
+    "fb-react-sdk": "^1.0.4"
+  },
   "devDependencies": {
     "axios": "^0.16.2",
     "babel-cli": "^6.26.0",

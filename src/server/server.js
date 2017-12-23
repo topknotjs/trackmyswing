@@ -5,6 +5,7 @@ let wsdc = require ('./handlers/wsdc');
 let DB = require('./handlers/db');
 let fDB = require('./handlers/fireDB');
 let dancerDef = require('./definitions/Dancer');
+let graph = require('fb-react-sdk');
 
 let app = express();
 let wsdcAPI = wsdc();
@@ -59,6 +60,16 @@ app.get('/api/dancer/find/:wscid', function(req, res){
             res.send({constructed: newDancer});
         });
 });
-app.listen(3000, function(){
-    console.log("listening to this joint on port 3000");
+app.get('/api/facebook/', function(req, res){
+    var authUrl = graph.getOauthUrl({
+        "client_id": "534047486965274",
+        "redirect_uri": "http://trackmyswing.andrewsunada.com/api/facebookredirect"
+    });
+    res.redirect(authUrl);
+});
+app.get('/api/facebookredirect', function(req, res){
+    console.log(req, res);
+});
+app.listen(9000, function(){
+    console.log("listening to this joint on port 9000");
 });

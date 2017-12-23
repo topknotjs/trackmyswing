@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import API from './api.jsx';
 import Dancer from './classes/Dancers.jsx';
+import graph from 'fb-react-sdk';
 require('../views/home.html');
 
 const DIVISIONS = [
@@ -54,6 +55,9 @@ class App extends Component{
     }
     onSubmitClicked(){
         this.searchDancers();
+    }
+    componentDidMount(){
+        
     }
     render(){
         return (<main>
