@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-server": "node ./src/server/server.js",
+    "start-forever-dev-server": "forever start ./src/server/server.js",
+    "stop-forever-dev-server": "forever stop ./src/server/server.js",
     "backup-dancers": "node ./src/server/scripts/processDancers.js"
   },
   "repository": {
