@@ -81,7 +81,7 @@ app.get('/api/facebookredirect', function(req, res){
 });
 app.get("/loggedIn", function(req, res){
     let query = "SELECT name FROM user WHERE uid = me()";
-    graph.fql(query, function(err, res){
+    graph.fql(query, function(err, graphRes){
         console.log(res);
         res.send("Logged in");
     });    
