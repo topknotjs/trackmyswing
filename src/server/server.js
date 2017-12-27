@@ -76,6 +76,7 @@ app.get('/api/facebookredirect', function(req, res){
         "client_secret": "d158c7edf3613d98cb02cc38e10eb1d4",
         "code": req.code
     }, function(err, facebookRes){
+        console.log(err, facebookRes);
         res.redirect('/loggedIn');
     });
 });
