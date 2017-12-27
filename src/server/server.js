@@ -89,7 +89,7 @@ app.get("/loggedIn", function(req, res){
 
     graph
         .setOptions(options)
-        .get("me", function(err, graphres){
+        .get("/me", function(err, graphres){
             console.log(graphres, err);
             res.send({result: graphres, error: err});
         });
