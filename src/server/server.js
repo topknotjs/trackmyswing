@@ -80,7 +80,11 @@ app.get('/api/facebookredirect', function(req, res){
     });
 });
 app.get("/loggedIn", function(req, res){
-    res.send("Logged in");
+    let query = "SELECT name FROM user WHERE uid = me()";
+    graph.fql(query, function(err, res){
+        console.log(res);
+        res.send("Logged in");
+    });    
 });
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
