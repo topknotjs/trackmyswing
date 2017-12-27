@@ -90,8 +90,8 @@ app.get("/loggedIn", function(req, res){
     graph
         .setOptions(options)
         .get(query, function(err, graphres){
-            console.log(graphres);
-            res.send(graphres);
+            console.log(graphres, err);
+            res.send({result: graphres, error: err});
         });
 
 });
