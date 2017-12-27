@@ -69,8 +69,8 @@ app.get('/api/facebook/', function(req, res){
     res.redirect(authUrl);
 });
 app.get('/api/facebookredirect', function(req, res){
-    console.log(CircularJSON.stringify(res));
-    res.send({response: req});
+    console.log(CircularJSON.stringify(req.query));
+    res.send({query: req.query});
 });
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
