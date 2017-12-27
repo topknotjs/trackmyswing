@@ -85,9 +85,11 @@ app.get("/loggedIn", function(req, res){
         pool: {maxSockets: Infinity},
         headers: {connection: "keep-alive"}
     };
+    let query = res.query.fbquery;
+    console.log("Query: ", query);
     graph
         .setOptions(options)
-        .get('sunada', function(err, graphres){
+        .get(query, function(err, graphres){
             console.log(graphres);
             res.send(graphres);
         });
