@@ -74,7 +74,7 @@ app.get('/api/facebookredirect', function(req, res){
         "client_id": "534047486965274",
         "redirect_uri": "http://trackmyswing.andrewsunada.com/api/facebookredirect",
         "client_secret": "d158c7edf3613d98cb02cc38e10eb1d4",
-        "code": req.code
+        "code": req.query.code
     }, function(err, facebookRes){
         console.log(err, facebookRes);
         res.redirect('/loggedIn');
