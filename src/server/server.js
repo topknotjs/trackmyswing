@@ -61,7 +61,7 @@ app.get('/api/dancer/find/:wscid', function(req, res){
             res.send({constructed: newDancer});
         });
 });
-app.get('/api/facebook/', function(req, res){
+app.get('/api/facebooklogin', function(req, res){
     var authUrl = graph.getOauthUrl({
         "client_id": "534047486965274",
         "redirect_uri": "http://trackmyswing.andrewsunada.com/api/facebookredirect"
@@ -70,7 +70,18 @@ app.get('/api/facebook/', function(req, res){
 });
 app.get('/api/facebookredirect', function(req, res){
     console.log(CircularJSON.stringify(req.query));
+    graph.authorize({
+        "client_id": "534047486965274",
+        "redirect_uri": "http://trackmyswing.andrewsunada.com/api/facebookredirect",
+        "client_secret": "d158c7edf3613d98cb02cc38e10eb1d4",
+        "code": req.code
+    }, function(err, facebookRes){
+        res.redirect('/loggedIn');
+    });
     res.send({query: req.query});
+});
+app.get("/loggedIn", function(req, res){
+    res.send("Logged in");
 });
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
