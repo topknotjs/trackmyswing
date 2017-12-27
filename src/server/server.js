@@ -6,6 +6,7 @@ let DB = require('./handlers/db');
 let fDB = require('./handlers/fireDB');
 let dancerDef = require('./definitions/Dancer');
 let graph = require('fb-react-sdk');
+let CircularJSON = require('circular-json');
 
 let app = express();
 let wsdcAPI = wsdc();
@@ -68,7 +69,7 @@ app.get('/api/facebook/', function(req, res){
     res.redirect(authUrl);
 });
 app.get('/api/facebookredirect', function(req, res){
-    console.log(req, res);
+    console.log(CircularJSON.stringify(res));
     res.send({response: req});
 });
 app.listen(9000, function(){
