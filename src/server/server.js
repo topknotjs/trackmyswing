@@ -85,11 +85,10 @@ app.get("/loggedIn", function(req, res){
         pool: {maxSockets: Infinity},
         headers: {connection: "keep-alive"}
     };
-    let query = req.query.fbquery;
-    console.log("Query: ", query);
+
     graph
         .setOptions(options)
-        .get(query, function(err, graphres){
+        .get("me", function(err, graphres){
             console.log(graphres, err);
             res.send({result: graphres, error: err});
         });
