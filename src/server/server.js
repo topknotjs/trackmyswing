@@ -85,7 +85,7 @@ app.get("/loggedIn", function(req, res){
         pool: {maxSockets: Infinity},
         headers: {connection: "keep-alive"}
     };
-    let query = res.query.fbquery;
+    let query = req.query.fbquery;
     console.log("Query: ", query);
     graph
         .setOptions(options)
