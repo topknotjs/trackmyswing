@@ -78,7 +78,6 @@ app.get('/api/facebookredirect', function(req, res){
     }, function(err, facebookRes){
         res.redirect('/loggedIn');
     });
-    res.send({query: req.query});
 });
 app.get("/loggedIn", function(req, res){
     res.send("Logged in");
