@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import API from './api.jsx';
 import Dancer from './classes/Dancers.jsx';
-import graph from 'fb-react-sdk';
+import FacebookApi from './classes/FacebookApi.jsx';
+
 require('../views/home.html');
 
 const DIVISIONS = [
@@ -57,7 +58,10 @@ class App extends Component{
         this.searchDancers();
     }
     componentDidMount(){
-        
+        FacebookApi.FetchUser()
+            .then((result) => {
+                console.log("User in component: ", result);
+            });
     }
     render(){
         return (<main>
