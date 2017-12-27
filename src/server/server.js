@@ -80,11 +80,18 @@ app.get('/api/facebookredirect', function(req, res){
     });
 });
 app.get("/loggedIn", function(req, res){
-    let query = "SELECT name FROM user WHERE uid = me()";
-    graph.fql(query, function(err, graphRes){
-        console.log(graphRes);
-        res.send("Logged in");
-    });    
+    let options = {
+        timeout: 3000,
+        pool: {maxSockets: Infinity},
+        headers: {connection: "keep-alive"}
+    };
+    graph
+        .setOptions(options)
+        .get('sunada', function(err, graphres){
+            console.log(graphres);
+            res.send(graphres);
+        });
+
 });
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
