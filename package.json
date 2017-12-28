@@ -8,7 +8,8 @@
     "dev-server": "node ./src/server/server.js",
     "start-forever-dev-server": "forever start ./src/server/server.js",
     "stop-forever-dev-server": "forever stop ./src/server/server.js",
-    "backup-dancers": "node ./src/server/scripts/processDancers.js"
+    "backup-dancers": "node ./src/server/scripts/processDancers.js",
+    "backup-events": "node ./src/server/scripts/processEvents.js"
   },
   "repository": {
     "type": "git",

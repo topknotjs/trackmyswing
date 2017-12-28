@@ -3,58 +3,12 @@ let fDB = require('../handlers/fireDB');
 
 let wsdc = wsdcConfig();
 let fireDB = fDB();
-let processDancerValues = (results) => {
-    let fetchDancers = (dancerSet) => {
-        let nextPromise = new Promise((resolve, reject) => {
-            let i = 0, promises = [];        
-            while(i < dancerSet.length){
-                let ci = dancerSet[i++];
-                while(!ci.hasOwnProperty('value')){
-                    ci = dancerSet[i++];                    
-                }
-                promises.push(wsdc.GetDancer(ci.value));
-            }
-    
-            Promise.all(promises)
-                .then(results => {
-                    results.forEach((result) => {
-                        if(!result.hasOwnProperty('dancer') || !result.dancer.hasOwnProperty('wscid')) return;
-                        let dancer = new dancerDef(result);
-                        console.log("Dancer: ", dancer);
-                        fireDB.WriteDancerToFirebase(dancer.WSCID, dancer);
-                    });
-                    resolve("done");
-                })
-                .catch((error) => {
-                    reject("Problem with promise set: ", error);
-                });
-        });        
-        return nextPromise;
-    };
 
-    let run = (i, step) => {
-        if(i >= results.length){
-            console.log("Exit 1");
-            return;
-        }else if((i + step) >= results.length){
-            console.log(`Exit 2 - [i: ${i} step: ${step} length: ${results.length}]`);
-            run(i, results.length - i);
-            return;
-        }
-        console.log(`Fetching: ${i} - ${i + step}`);
-        fetchDancers(results.slice(i, i + step))
-            .then(() => {
-                setTimeout(() => {
-                    run(i + step, step);
-                }, 2000);                
-            });
-        
-    };
-    run(0, 15);
-};
-
-wsdc.GetDancers()
+wsdc.GetEvents()
     .then((results) => {
-       processDancerValues(results);
-    });;
+       console.log(results);
+    })
+    .catch((error) => {
+        
+    });
 
