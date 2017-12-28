@@ -1,6 +1,5 @@
 let wsdcConfig = require ('../handlers/wsdc');
 let fDB = require('../handlers/fireDB');
-let dancerDef = require('../definitions/Dancer');
 
 let wsdc = wsdcConfig();
 let fireDB = fDB();
@@ -20,8 +19,8 @@ let processDancerValues = (results) => {
                 .then(results => {
                     results.forEach((result) => {
                         if(!result.hasOwnProperty('dancer') || !result.dancer.hasOwnProperty('wscid')) return;
-                        let dancer = new dancerDef();
-                        dancer.LoadWSDC(result);                        
+                        let dancer = new dancerDef(result);
+                        console.log("Dancer: ", dancer);
                         fireDB.WriteDancerToFirebase(dancer.WSCID, dancer);
                     });
                     resolve("done");
@@ -34,13 +33,12 @@ let processDancerValues = (results) => {
     };
 
     let run = (i, step) => {
-        if(step == 0){
+        if(i >= results.length){
             console.log("Exit 1");
             return;
         }else if((i + step) >= results.length){
             console.log(`Exit 2 - [i: ${i} step: ${step} length: ${results.length}]`);
-            let increment = results.length - i - 1;
-            run(i, increment);
+            run(i, results.length - i);
             return;
         }
         console.log(`Fetching: ${i} - ${i + step}`);
@@ -52,7 +50,7 @@ let processDancerValues = (results) => {
             });
         
     };
-    run(0, 10);
+    run(0, 15);
 };
 
 wsdc.GetDancers()

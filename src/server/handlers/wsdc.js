@@ -9,7 +9,6 @@ class WSDC{
         let dPromise = new Promise((resolve, reject) => {
             axios.get(this.DancersUrl)
                 .then((results) => {
-
                     resolve(results.data);
                 })
                 .catch((error) => {

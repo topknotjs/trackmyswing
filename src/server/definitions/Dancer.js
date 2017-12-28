@@ -9,6 +9,7 @@ const DIVISION_MAP = {
 }
 class Dancer{
     constructor(config){
+        if(!config) return;
         this.FirstName = config.FirstName;
         this.LastName = config.LastName;
         this.WSCID = config.WSCID;
@@ -20,6 +21,7 @@ class Dancer{
     }
     LoadWSDC(config){
         if(!config) return;
+        console.log("Config: ", config);
         let dancer = config.dancer;
         //Load up dancer basic info
         //TODO: Validate this info!
