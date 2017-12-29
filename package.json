@@ -24,7 +24,9 @@
   "dependencies": {
     "circular-json": "^0.3.3",
     "fb": "^2.0.0",
-    "fb-react-sdk": "^1.0.4"
+    "fb-react-sdk": "^1.0.4",
+    "https": "^1.0.0",
+    "querystring": "^0.2.0"
   },
   "devDependencies": {
     "axios": "^0.16.2",
