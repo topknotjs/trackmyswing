@@ -1,5 +1,6 @@
 let axios = require('axios');
 let https = require('https');
+let Event = require('../definitions/Event');
 let CircularJson = require('circular-json');
 const querystring = require('querystring');
 class WSDC{
@@ -36,7 +37,6 @@ class WSDC{
     }
     GetEvents(){
         return new Promise((resolve, reject) => {
-            console.log("Url: ", this.EventsUrl);
             let postData = querystring.stringify({date_range: 12, action: "fetch_searched_event"});
             const options = {
                 hostname: "www.worldsdc.com",
@@ -47,15 +47,20 @@ class WSDC{
                     "Content-Length": postData.length
                 },
                 method: "POST"
-            }
+            };
             let req = https.request(options, (res) => {
-                console.log("statuscode: ", res.statusCode);
                 let data = "";
                 res.on('data', (d) => {
                     data += d;
                 });
                 res.on('end', () => {
-                    console.log(CircularJson.parse(data));
+                    let eventList = [];
+                    data = Event.SanitizeRaw(data);
+                    let parsedData = CircularJson.parse(data);
+                    for(let i = 0, len = parsedData.length; i < len; i++){
+                        eventList.push(new Event(parsedData[i]));
+                    }
+                    resolve(eventList);
                 });
             });
             req.on('error', (e) => {
@@ -63,19 +68,6 @@ class WSDC{
             });
             req.write(postData);
             req.end();
-            
-
-            
-            /*axios.post(this.EventsUrl, {data: JSON.stringify({date_range: 12, action: "fetch_searched_event"})})
-                .then((eventsResult) => {
-                    let serialized = CircularJson.stringify(eventsResult.data);
-                    let parsed = CircularJson.parse(serialized);
-                    resolve(parsed)
-                })
-                .catch((error) => {
-                    console.log("Get events error: ", error);
-                    reject(error);
-                });*/
         });
 
     }

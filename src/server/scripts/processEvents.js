@@ -6,7 +6,7 @@ let fireDB = fDB();
 
 wsdc.GetEvents()
     .then((results) => {
-       console.log(results);
+       //console.log(results);
     })
     .catch((error) => {
         

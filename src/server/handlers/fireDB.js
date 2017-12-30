@@ -35,6 +35,12 @@ class DB{
     WriteDancerToFirebase(wscid, dancer){
         this.Con.ref('dancers/' + wscid).set(dancer);
     }
+    /**
+     * Figure out a key to write the event to the database
+     */
+    WriteEventToFirebase(){
+
+    }
     GetDancersByDivision(division){
         let ref = this.Con.ref('dancers');
         ref.orderByChild('Division').equalTo('allstar').once('value')
