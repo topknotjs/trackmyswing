@@ -16,8 +16,7 @@ class Event{
         this.ProcessDate(data.date);
         this.ProcessLocation(data.location);
         this.ProcessContact(data.contact);
-        console.log(this);
-    }
+    } 
     ProcessContact(text){
         let matched = false;
         text.replace(/^([^0-9\+]*)(.*)<a.*>(.*)<\//, (match, $1, $2, $3, offset, original) => {
@@ -70,6 +69,9 @@ class Event{
         }
         this.StartDate = startDate;
         this.EndDate = endDate;
+    }
+    GetKey(){
+        return this.EventName.toLowerCase().replace(/[^a-z]/g, "");
     }
     static SanitizeRaw(text){
         return text.replace(/<br>/g, "").replace(/\n/g, "");

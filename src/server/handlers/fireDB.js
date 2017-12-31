@@ -20,6 +20,10 @@ class DB{
         }
         this.Con = firebase.database();
         this.Authenticate();
+        this.Con.ref().once('value')
+            .then(function (snap) {
+                console.log('snap.val(): ', snap.val());
+            });
     }
     Authenticate(){
         firebase.auth().signInWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911")
@@ -35,11 +39,24 @@ class DB{
     WriteDancerToFirebase(wscid, dancer){
         this.Con.ref('dancers/' + wscid).set(dancer);
     }
+    WriteEventsToFirebase(events){
+        let eventMap = {};
+        let ref = this.Con.ref('events/');
+        events.forEach((event) => {
+            ref.child(event.GetKey()).set(event);
+        });
+    }
     /**
      * Figure out a key to write the event to the database
      */
-    WriteEventToFirebase(){
-
+    WriteEventToFirebase(eventkey, event){
+        console.log("Writing event: ", eventkey);
+        this.Con.ref('events/' + eventkey).set(event);
+        //console.log(`Writing to ${'events/' + eventkey}: `, JSON.parse(JSON.stringify(event)));
+    }
+    TestCon(){
+        console.log("set");
+        this.Con.ref('test/').set("true");
     }
     GetDancersByDivision(division){
         let ref = this.Con.ref('dancers');

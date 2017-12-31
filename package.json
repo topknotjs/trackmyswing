@@ -9,7 +9,8 @@
     "start-forever-dev-server": "forever start ./src/server/server.js",
     "stop-forever-dev-server": "forever stop ./src/server/server.js",
     "backup-dancers": "node ./src/server/scripts/processDancers.js",
-    "backup-events": "node ./src/server/scripts/processEvents.js"
+    "backup-events": "node ./src/server/scripts/processEvents.js",
+    "test-fb": "node ./src/server/scripts/testFirebase.js"
   },
   "repository": {
     "type": "git",
