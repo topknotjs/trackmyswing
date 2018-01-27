@@ -1,3 +1,10 @@
+/**
+ * The intention with this script is to pull a full list of all dancers as quickly as possible.
+ * The current problem is that the wsdc service shuts down after too many requests per second.
+ * Solutions:
+ *  - HTTP2 batch requests?
+ *  - Discover better throttle options
+ */
 let wsdcConfig = require ('../handlers/wsdc');
 let fDB = require('../handlers/fireDB');
 let dancerDef = require('../definitions/Dancer');

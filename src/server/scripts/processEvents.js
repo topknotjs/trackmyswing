@@ -8,12 +8,11 @@ let finish = () => {
 };
 wsdc.GetEvents()
     .then((results) => {
-        //results = results.slice(0, 3).reverse();
-        //fireDB.WriteEventsToFirebase(results);
-        results.forEach((event, index) => {
-            fireDB.WriteEventToFirebase(event.GetKey(), event);
-        });
-       finish();
+        return fireDB.WriteEventsToFirebase(results);
+    })
+    .then(() => {
+        fireDB.GetEvents()
+            .then(() => finish());
     })
     .catch((error) => {
         console.log("Error: ", error);

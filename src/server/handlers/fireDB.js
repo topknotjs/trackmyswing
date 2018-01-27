@@ -22,7 +22,7 @@ class DB{
         this.Authenticate();
         this.Con.ref().once('value')
             .then(function (snap) {
-                console.log('snap.val(): ', snap.val());
+                //console.log('snap.val(): ', snap.val());
             });
     }
     Authenticate(){
@@ -40,23 +40,45 @@ class DB{
         this.Con.ref('dancers/' + wscid).set(dancer);
     }
     WriteEventsToFirebase(events){
-        let eventMap = {};
-        let ref = this.Con.ref('events/');
-        events.forEach((event) => {
-            ref.child(event.GetKey()).set(event);
+        return new Promise((resolve, reject) => {
+            let eventMap = {};
+            let ref = this.Con.ref('events/');
+            let promises = [];
+            events.forEach((event) => {
+                //console.log("Writing event: ", event);
+                let currProm = new Promise((eResolve, eReject) => {
+                    ref.child(event.GetKey()).set(event, () => eResolve());
+                });
+                promises.push(currProm);
+            });
+            Promise.all(promises).then(() => resolve());
+        });
+    }
+    GetEvents(){
+        return new Promise((resolve, reject) => {
+            this.Con.ref('events').once('value')
+                .then((snapshot) => {
+                    //console.log("Events: ", snapshot.val());
+                    resolve(snapshot.val());
+                });
         });
     }
     /**
      * Figure out a key to write the event to the database
      */
     WriteEventToFirebase(eventkey, event){
-        console.log("Writing event: ", eventkey);
+        
         this.Con.ref('events/' + eventkey).set(event);
         //console.log(`Writing to ${'events/' + eventkey}: `, JSON.parse(JSON.stringify(event)));
     }
     TestCon(){
-        console.log("set");
-        this.Con.ref('test/').set("true");
+        return new Promise((resolve, reject) => {
+            console.log("set");
+            this.Con.ref('test/').set({test: true}, (res) => {
+                console.log("Set complete!: ", res);
+                
+            });
+        });
     }
     GetDancersByDivision(division){
         let ref = this.Con.ref('dancers');
