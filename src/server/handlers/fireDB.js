@@ -67,9 +67,9 @@ class DB{
      * Figure out a key to write the event to the database
      */
     WriteEventToFirebase(eventkey, event){
-        
-        this.Con.ref('events/' + eventkey).set(event);
-        //console.log(`Writing to ${'events/' + eventkey}: `, JSON.parse(JSON.stringify(event)));
+        return new Promise((resolve, reject) => {
+            this.Con.ref('events/' + eventkey).set(event, () => resolve());
+        });        
     }
     TestCon(){
         return new Promise((resolve, reject) => {

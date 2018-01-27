@@ -66,10 +66,9 @@ class Event{
         }
         this.StartDate = startDate.toLocaleDateString("en-US");
         this.EndDate = endDate.toLocaleDateString("en-US");
-        console.log(`Dates: ${this.StartDate}, ${this.EndDate}`);
     }
     GetKey(){
-        return this.StartDate.replace("/", "-") + "-" + this.EventName.toLowerCase().replace(/[^a-z]/g, "");
+        return this.StartDate.replace(/\//g, "-") + "-" + this.EventName.toLowerCase().replace(/[^a-z]/g, "");
     }
     static SanitizeRaw(text){
         return text.replace(/<br>/g, "").replace(/\n/g, "");
