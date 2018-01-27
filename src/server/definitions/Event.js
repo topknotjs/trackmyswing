@@ -71,7 +71,7 @@ class Event{
         this.EndDate = endDate;
     }
     GetKey(){
-        return this.EventName.toLowerCase().replace(/[^a-z]/g, "");
+        return this.StartDate.replace("/", "-") + "-" + this.EventName.toLowerCase().replace(/[^a-z]/g, "");
     }
     static SanitizeRaw(text){
         return text.replace(/<br>/g, "").replace(/\n/g, "");
