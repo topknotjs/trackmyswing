@@ -3,5 +3,7 @@ let fireDB = fDB();
 let finish = () => {
     process.exit("Finished!");
 };
-fireDB.TestCon();
-finish();
+fireDB.TestCon()
+    .then(() => {
+        finish();
+    });

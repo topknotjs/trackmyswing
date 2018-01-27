@@ -30,15 +30,12 @@ class Event{
         }
     }
     ProcessLocation(text){
-        //console.log("Content: ", text);
         text.replace(/^(.*)<a/, (match, $1, offset, original) => {
             this.HotelAddress = Event.SanitizeData($1);
         });
         text.replace(/^.*href=\'(.*)\'/, (match, $1, $offset, original) => {
             this.HotelUrl = Event.SanitizeData($1);
         });
-        //console.log("Address: ", this.HotelAddress);
-        //console.log("Url: ", this.HotelUrl);
     }
     ProcessName(text){
         this.EventName = text.replace(/\s\s+/g, " ").trim();
@@ -67,8 +64,9 @@ class Event{
                 this.SingleDay = true;
             });
         }
-        this.StartDate = startDate;
-        this.EndDate = endDate;
+        this.StartDate = startDate.toLocaleDateString("en-US");
+        this.EndDate = endDate.toLocaleDateString("en-US");
+        console.log(`Dates: ${this.StartDate}, ${this.EndDate}`);
     }
     GetKey(){
         return this.EventName.toLowerCase().replace(/[^a-z]/g, "");
