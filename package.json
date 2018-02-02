@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/SwingCoder911/trackmyswing#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "circular-json": "^0.3.3",
+    "connect": "^3.6.5",
     "fb": "^2.0.0",
     "fb-react-sdk": "^1.0.4",
     "https": "^1.0.0",

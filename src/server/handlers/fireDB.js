@@ -71,6 +71,24 @@ class DB{
             this.Con.ref('events/' + eventkey).set(event, () => resolve());
         });        
     }
+    WriteAccountToFirebase(account){
+        return new Promise((resolve, reject) => {
+            this.Con.ref('accounts').push(account.toJSON(), () => resolve());
+        });
+    }
+    WriteAttendanceToEvent(eventId, accountId){
+        return new Promise((resolve, reject) => {
+            this.Con.ref('eventAttendees/' + eventId).orderByChild('accountId').equalTo(accountId).once('value', (snapshot) => {
+                if(snapshot.exists()){//Add logging here
+                    console.log("Already exists!");
+                    reject("Exists");
+                }else{
+                    console.log("Pushing: ", accountId);
+                    this.Con.ref('eventAttendees/' + eventId + '/').push({ accountId }, () => resolve(accountId));
+                }
+            });            
+        });
+    }
     TestCon(){
         return new Promise((resolve, reject) => {
             console.log("set");
