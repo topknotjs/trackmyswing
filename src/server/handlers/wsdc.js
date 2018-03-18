@@ -1,6 +1,7 @@
 let axios = require('axios');
 let https = require('https');
 let Event = require('../definitions/Event');
+let DancerDef = require('../definitions/Dancer');
 let CircularJson = require('circular-json');
 const querystring = require('querystring');
 class WSDC{
@@ -23,7 +24,7 @@ class WSDC{
     }
     GetDancer(wscid){
         return new Promise((resolve, reject) => {
-            axios.post(this.DancerUrl, {q: wscid})
+            axios.post(this.DancerUrl, {q: DancerDef.SanitizeWscid(wscid)})
                 .then((dancerResult) => {
                     let serialized = CircularJson.stringify(dancerResult.data);
                     let parsed = CircularJson.parse(serialized);

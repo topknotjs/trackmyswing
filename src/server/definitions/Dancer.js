@@ -79,5 +79,12 @@ class Dancer{
         }
         return null;
     }
+    static SanitizeWscid(wscidInput){
+        let sanitized = wscidInput.trim().toLowerCase().replace(/[^0-9]*/, '');
+        if(parseInt(wscidInput) < 0){
+            return null;
+        }
+        return parseInt(wscidInput);
+    }
 }
 module.exports = Dancer;

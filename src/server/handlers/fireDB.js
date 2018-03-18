@@ -100,7 +100,7 @@ class DB{
     }
     GetDancersByDivision(division){
         let ref = this.Con.ref('dancers');
-        ref.orderByChild('Division').equalTo('allstar').once('value')
+        ref.orderByChild('Division').equalTo(DancerDef.SanitizeDivision(division)).once('value')
             .then((snapshot) => {
                 console.log(snapshot.val());
             });

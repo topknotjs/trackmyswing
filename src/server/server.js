@@ -21,20 +21,10 @@ app.get('/', function(req, res){
     res.sendFile(publicDir + "/home.html");
 });
 
-app.get('/api/dancers/:division/:role/:qualifies', function(req, res){
-    let { division, role, qualifies } = req.params;
-    fireDB.GetDancersByDivisionRoleQualifies(division.toLowerCase(), role.toLowerCase(), (qualifies === 'true'))
-        .then((dancers) => {
-            res.send(dancers);
-        })
-        .catch((error) => {
-            res.send("Error: ", error);
-        });    
-});
-
 app.get('/api/dancers/:division/:role', function(req, res){
     let { division, role } = req.params;
-    fireDB.GetDancersByDivisionRoleQualifies(division, role, false)
+    let { qualifies } = req.query;
+    fireDB.GetDancersByDivisionRoleQualifies(division, role, (qualifies === 'true'))
         .then((dancers) => {
             res.send(dancers);
         })
@@ -46,24 +36,27 @@ app.get('/api/dancers/:division/:role', function(req, res){
 app.get('/api/dancers/:division', function(req, res){
     fireDB.GetDancersByDivision(req.params.division);    
 });
-
-app.get('/api/dancer/store/:wscid', function(req, res){
+/*
+//Need to make tusre this is sanitized and works with the new code
+app.post('/api/dancer/store/:wscid', function(req, res){
     wsdcAPI.GetDancer(req.params.wscid)
         .then((result) => {
             let newDancer = new dancerDef(result);
             fireDB.WriteDancerToFirebase(req.params.wscid, newDancer);
             res.send(newDancer);
         });
-});
+});*/
 
 app.get('/api/dancer/find/:wscid', function(req, res){
     wsdcAPI.GetDancer(req.params.wscid)
         .then((result) => {
-            let newDancer = new dancerDef(result);
+            let newDancer = new dancerDef();
+            newDancer.LoadWSDC(result);
             res.send({constructed: newDancer});
         });
 });
-
+/*
+Commenting this out for future use when the api is fully built.
 app.post('/api/account/attend/:event_id/:account_id', function(req, res){
     fireDB.WriteAttendanceToEvent(req.params.event_id, req.params.account_id)
         .then((result) => {
@@ -87,7 +80,7 @@ app.put('/api/account/', function(req, res){
             res.send("Error: " + error);  
         });    
 });
-
+*/
 app.listen(9000, function(){
     console.log("listening to this joint on port 9000");
 });
