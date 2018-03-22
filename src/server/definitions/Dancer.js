@@ -21,7 +21,6 @@ class Dancer{
     }
     LoadWSDC(config){
         if(!config) return;
-        console.log("Config: ", config);
         let dancer = config.dancer;
         //Load up dancer basic info
         //TODO: Validate this info!

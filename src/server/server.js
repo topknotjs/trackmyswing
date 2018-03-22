@@ -36,23 +36,22 @@ app.get('/api/dancers/:division/:role', function(req, res){
 app.get('/api/dancers/:division', function(req, res){
     fireDB.GetDancersByDivision(req.params.division);    
 });
-/*
-//Need to make tusre this is sanitized and works with the new code
-app.post('/api/dancer/store/:wscid', function(req, res){
-    wsdcAPI.GetDancer(req.params.wscid)
-        .then((result) => {
-            let newDancer = new dancerDef(result);
-            fireDB.WriteDancerToFirebase(req.params.wscid, newDancer);
-            res.send(newDancer);
-        });
-});*/
 
-app.get('/api/dancer/find/:wscid', function(req, res){
+app.get('/api/dancer/:wscid', function(req, res){
     wsdcAPI.GetDancer(req.params.wscid)
         .then((result) => {
             let newDancer = new dancerDef();
             newDancer.LoadWSDC(result);
             res.send({constructed: newDancer});
+        });
+});
+app.post('/api/dancer/:wscid', function(req, res){
+    wsdcAPI.GetDancer(req.params.wscid)
+        .then((result) => {
+            let newDancer = new dancerDef();
+            newDancer.LoadWSDC(result);
+            fireDB.WriteDancerToFirebase(result.wscid, newDancer);
+            res.send(newDancer);
         });
 });
 /*
