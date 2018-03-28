@@ -4,3 +4,4 @@ node_modules/*
 public
 public/*
 npm-debug.log
+src/server/handlers/dbConfig.js
