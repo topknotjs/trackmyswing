@@ -6,6 +6,7 @@ let DB = require('./handlers/db');
 let fDB = require('./handlers/fireDB');
 let dancerDef = require('./definitions/Dancer');
 let accountDef = require('./definitions/Account');
+let memcache = require('./middlewares/memcache');
 let bodyParser = require('body-parser');
 let graph = require('fb-react-sdk');
 let CircularJSON = require('circular-json');
@@ -21,7 +22,16 @@ app.get('/', function(req, res){
     res.sendFile(publicDir + "/home.html");
 });
 
-app.get('/api/dancers/:division/:role', function(req, res){
+let cacheControl = (req, res, next) => {
+    res.header({
+        "Cache-Control": "public,max-age=36000"
+    });
+    next();
+};
+
+app.use(cacheControl);
+
+app.get('/api/dancers/:division/:role', memcache(3600), function(req, res){
     let { division, role } = req.params;
     let { qualifies } = req.query;
     fireDB.GetDancersByDivisionRoleQualifies(division, role, (qualifies === 'true'))
@@ -33,11 +43,11 @@ app.get('/api/dancers/:division/:role', function(req, res){
         });    
 });
 
-app.get('/api/dancers/:division', function(req, res){
+app.get('/api/dancers/:division', memcache(3600), function(req, res){
     fireDB.GetDancersByDivision(req.params.division);    
 });
 
-app.get('/api/dancer/:wscid', function(req, res){
+app.get('/api/dancer/:wscid', memcache(3600), function(req, res){
     wsdcAPI.GetDancer(req.params.wscid)
         .then((result) => {
             let newDancer = new dancerDef();

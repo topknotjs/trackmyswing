@@ -83,8 +83,8 @@ class App extends Component{
                 </select>
                 <button onClick={this.onSubmitClicked}>Submit</button>
                 <ul className="dancer-list">
-                    {this.state.dancers.map((dancer) => {
-                        return <li>{dancer.FirstName} {dancer.LastName}</li>
+                    {this.state.dancers.map((dancer, index) => {
+                        return (<li key={index}>{dancer.FirstName} {dancer.LastName}</li>)
                     })}
                 </ul>
             </section>
