@@ -5,3 +5,6 @@ public
 public/*
 npm-debug.log
 src/server/handlers/dbConfig.js
+
+logs
+logs/*
