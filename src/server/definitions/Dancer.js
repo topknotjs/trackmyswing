@@ -16,6 +16,7 @@ class Dancer{
         this.CurrentPoints = config.CurrentPoints;
         this.Division = config.Division;
         this.Role = config.Role;
+        this.Relevance = config.Relevance;
         this.QualifiesForNextDivision = config.QualifiesForNextDivision;
         this.DivisionRoleQualifies = `${this.Division}-${this.Role}${this.QualifiesForNextDivision ? '-q' : ''}`;
     }
@@ -30,6 +31,7 @@ class Dancer{
         this.CurrentPoints = 0;
         this.Division = null;
         this.Role = null;
+        this.Relevance = null;
         this.QualifiesForNextDivision = false;
         this.DivisionRoleQualifies = null;
         this.GetDivision(config.placements[PLACEMENTS_KEY]);
@@ -37,6 +39,7 @@ class Dancer{
     GetDivision(placements){
         if(!Array.isArray(placements) || !placements.length) return;
         let currentIndex = 0;
+        let yearCoefficient = 1000 * 60 * 60 * 24 * 360;
         let divisionConfig = placements[currentIndex];
         //Attempt to find pointed JJ division
         while(currentIndex < placements.length){
@@ -44,6 +47,17 @@ class Dancer{
             if(DIVISION_MAP.hasOwnProperty(currentPlacement.division.name)){
                 divisionConfig = currentPlacement;                
                 break;
+            }
+        }
+        //Determine Relevance by how many years ago the last event placement was
+        if(divisionConfig.competitions.length > 0 && divisionConfig.competitions[0].event != null){
+            let recentDateStr = divisionConfig.competitions[0].event.date;
+            let parts = recentDateStr.split(" ");
+            let compDate = new Date(`${parts[0]} 1, ${parts[1]}`);
+            let currentDate = new Date();
+            let years = Math.floor((currentDate - compDate) / yearCoefficient);
+            if(years <= 3){
+                this.Relevance = years;
             }
         }
         //Determine Division, Role, Qualifies
@@ -55,6 +69,8 @@ class Dancer{
             this.Division = divisionConfig.division.name.replace(/[^a-zA-Z]/, '').toLowerCase();
             this.QualifiesForNextDivision = false;
         }
+
+        if(divisionConfig)
         this.Role = (divisionConfig.competitions.length == 0) ? 'N/A' : divisionConfig.competitions[0].role;
         this.CurrentPoints = divisionConfig.total_points;
         this.DivisionRoleQualifies = `${this.Division}-${this.Role}${this.QualifiesForNextDivision ? '-q' : ''}`;
@@ -79,7 +95,11 @@ class Dancer{
         return null;
     }
     static SanitizeWscid(wscidInput){
+        if(typeof wscidInput === 'number'){
+            return wscidInput;
+        }
         let sanitized = wscidInput.trim().toLowerCase().replace(/[^0-9]*/, '');
+        
         if(parseInt(wscidInput) < 0){
             return null;
         }

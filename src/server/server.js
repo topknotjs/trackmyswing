@@ -22,14 +22,12 @@ app.get('/', function(req, res){
     res.sendFile(publicDir + "/home.html");
 });
 
-let cacheControl = (req, res, next) => {
+app.use((req, res, next) => {
     res.header({
-        "Cache-Control": "public,max-age=36000"
+        "Cache-Control": "max-age=36000"
     });
     next();
-};
-
-app.use(cacheControl);
+});
 
 app.get('/api/dancers/:division/:role', memcache(3600), function(req, res){
     let { division, role } = req.params;

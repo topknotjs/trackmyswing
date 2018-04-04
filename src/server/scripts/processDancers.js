@@ -26,13 +26,13 @@ let processDancerValues = (results) => {
                     }
                     promises.push(wsdc.GetDancer(ci.value));
                 }
-        
                 Promise.all(promises)
                     .then(results => {
                         results.forEach((result) => {
                             if(!result.hasOwnProperty('dancer') || !result.dancer.hasOwnProperty('wscid')) return;
                             let dancer = new dancerDef();
-                            dancer.LoadWSDC(result);                        
+                            dancer.LoadWSDC(result);                   
+                            console.log("Loading dancer: ", dancer.WSCID);
                             fireDB.WriteDancerToFirebase(dancer.WSCID, dancer);
                         });
                         resolve("done");
@@ -61,6 +61,9 @@ let processDancerValues = (results) => {
                     setTimeout(() => {
                         run(i + step, step);
                     }, 2000);                
+                })
+                .catch((error) => {
+                    reject("Internal error: ", error);
                 });
             
         };
@@ -70,13 +73,13 @@ let processDancerValues = (results) => {
 
 wsdc.GetDancers()
     .then((results) => {
-       processDancerValues(results)
-        .then(() => {
-            finish();
-        })
-        .catch(() => {
-            console.log("Error.");
-            finish();
-        });
-    });;
+        processDancerValues(results)
+            .then(() => {
+                finish();
+            })
+            .catch((error) => {
+                console.log("Error: ", error);
+                finish();
+            });
+    });
 
