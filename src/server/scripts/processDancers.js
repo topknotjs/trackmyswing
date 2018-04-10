@@ -64,8 +64,7 @@ let processDancerValues = (results) => {
                 })
                 .catch((error) => {
                     reject("Internal error: ", error);
-                });
-            
+                });            
         };
         run(0, 10);
     });

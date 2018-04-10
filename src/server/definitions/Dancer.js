@@ -1,4 +1,5 @@
 const PLACEMENTS_KEY = 'West Coast Swing';
+const DEFAULT_RELEVENCE = 5;
 const DIVISION_MAP = {
     'Champions': {Key: 'champion', MaxPoints: null},
     'All-Stars': {Key: 'allstar', MaxPoints: null},
@@ -16,7 +17,7 @@ class Dancer{
         this.CurrentPoints = config.CurrentPoints;
         this.Division = config.Division;
         this.Role = config.Role;
-        this.Relevance = config.Relevance;
+        this.Relevance = config.Relevance === undefined ? DEFAULT_RELEVENCE : config.Relevance;
         this.QualifiesForNextDivision = config.QualifiesForNextDivision;
         this.DivisionRoleQualifies = `${this.Division}-${this.Role}${this.QualifiesForNextDivision ? '-q' : ''}`;
     }
@@ -31,7 +32,7 @@ class Dancer{
         this.CurrentPoints = 0;
         this.Division = null;
         this.Role = null;
-        this.Relevance = null;
+        this.Relevance = DEFAULT_RELEVENCE;
         this.QualifiesForNextDivision = false;
         this.DivisionRoleQualifies = null;
         this.GetDivision(config.placements[PLACEMENTS_KEY]);
@@ -56,7 +57,7 @@ class Dancer{
             let compDate = new Date(`${parts[0]} 1, ${parts[1]}`);
             let currentDate = new Date();
             let years = Math.floor((currentDate - compDate) / yearCoefficient);
-            if(years <= 3){
+            if(years < DEFAULT_RELEVENCE){
                 this.Relevance = years;
             }
         }
@@ -70,7 +71,6 @@ class Dancer{
             this.QualifiesForNextDivision = false;
         }
 
-        if(divisionConfig)
         this.Role = (divisionConfig.competitions.length == 0) ? 'N/A' : divisionConfig.competitions[0].role;
         this.CurrentPoints = divisionConfig.total_points;
         this.DivisionRoleQualifies = `${this.Division}-${this.Role}${this.QualifiesForNextDivision ? '-q' : ''}`;
