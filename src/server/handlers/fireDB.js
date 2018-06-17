@@ -26,10 +26,10 @@ class DB{
             });
     }
     Authenticate(){
-        firebase.auth().signInWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911")
+        firebase.auth().signInWithEmailAndPassword(dbConfig.firebase.signinEmail, dbConfig.firebase.signinPassword)
             .catch(function(sError) {
                 console.log("Sign in error: ", sError)
-                firebase.auth().createUserWithEmailAndPassword("kaleb2azriel@gmail.com", "bloodred911")
+                firebase.auth().createUserWithEmailAndPassword(dbConfig.firebase.signinEmail, dbConfig.firebase.signinPassword)
                     .catch((cError) => {
                         console.log("Error with auth: ", cError);
                     });
