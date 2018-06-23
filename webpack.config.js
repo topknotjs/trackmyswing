@@ -4,21 +4,30 @@ var path = require('path');
 var BUILD_DIR = path.resolve(__dirname, 'public');
 module.exports = {
     entry: {
-        home: "./src/client/js/home.jsx"
+        home: "./src/client/index.ts",
+        server: "./src/server/server.ts"
     },
     output: {
         path: BUILD_DIR,
         filename: "[name].bundle.js",
         sourceMapFilename: '[name].map'
     },
+    resolve: {
+        extensions: [".webpack.js", ".web.js", ".js", ".ts"]
+    },
+    // externals: ['express'], 
     module: {
         loaders: [
             {
                 test : /\.jsx|js?/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
-                
             },
+            {
+                test : /\.ts?/,
+                exclude: /node_modules/,
+                loader: 'ts-loader',
+            },            
             {
                 test: /\.html$/,
                 loader: "file-loader?name=[name].[ext]",
@@ -56,5 +65,6 @@ module.exports = {
             }
         ]
     },
-    watch: true
+    // watch: true,
+    target: "node"
 };
