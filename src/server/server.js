@@ -1,7 +1,7 @@
 let express = require('express');
 let path = require('path');
 let dancers = require('./handlers/dancers');
-let wsdc = require ('./handlers/wsdc');
+let wsdc = require('./handlers/wsdc');
 let DB = require('./handlers/db');
 let fDB = require('./handlers/fireDB');
 let dancerDef = require('./definitions/Dancer');
@@ -10,58 +10,73 @@ let memcache = require('./middlewares/memcache');
 let bodyParser = require('body-parser');
 let graph = require('fb-react-sdk');
 let CircularJSON = require('circular-json');
-
+const LoggerService = require('./handlers/logger');
+const environment = process.env.NODE_ENV.trim();
+let logger = new LoggerService();
 let app = express();
 let wsdcAPI = wsdc();
 let dancersAPI = dancers();
 let fireDB = fDB();
 var publicDir = path.resolve(__dirname, '../../public');
+
 app.use('/static', express.static('public'));
 app.use(bodyParser.json());
-app.get('/', function(req, res){
-    res.sendFile(publicDir + "/home.html");
+app.get('/', function(req, res) {
+	res.sendFile(publicDir + '/home.html');
 });
 
 app.use((req, res, next) => {
-    res.header({
-        "Cache-Control": "max-age=36000"
-    });
-    next();
+	res.header({
+		'Cache-Control': 'max-age=36000',
+	});
+	next();
 });
 
-app.get('/api/dancers/:division/:role', memcache(3600), function(req, res){
-    let { division, role } = req.params;
-    let { qualifies } = req.query;
-    fireDB.GetDancersByDivisionRoleQualifies(division, role, (qualifies === 'true'))
-        .then((dancers) => {
-            res.send(dancers);
-        })
-        .catch((error) => {
-            res.send({ error });
-        });    
+app.get('/api/dancers/:division/:role', memcache(3600), function(req, res) {
+	let { division, role } = req.params;
+	let { qualifies } = req.query;
+	fireDB
+		.GetDancersByDivisionRoleQualifies(division, role, qualifies === 'true')
+		.then(dancers => {
+            logger.log(`Found ${dancers.length} dancers in division: ${division}, role: ${role}`);
+			res.send(dancers);
+		})
+		.catch(error => {
+			logger.error(`Get dancer by division/role error: ${error}`);
+			res.send({ error });
+		});
 });
 
-app.get('/api/dancers/:division', memcache(3600), function(req, res){
-    fireDB.GetDancersByDivision(req.params.division);    
+app.get('/api/dancers/:division', memcache(3600), function(req, res) {
+	fireDB
+		.GetDancersByDivision(req.params.division)
+		.then(dancers => {
+			logger.info(
+				`Found ${dancers.length} dancers in division: ${division}`
+			);
+			res.send(dancers);
+		})
+		.catch(error => {
+			logger.error(`Get dancer by division error: ${error}`);
+			res.send({ error });
+		});
 });
 
-app.get('/api/dancer/:wscid', memcache(3600), function(req, res){
-    wsdcAPI.GetDancer(req.params.wscid)
-        .then((result) => {
-            let newDancer = new dancerDef();
-            newDancer.LoadWSDC(result);
-            res.send({constructed: newDancer});
-        });
+app.get('/api/dancer/:wscid', memcache(3600), function(req, res) {
+	wsdcAPI
+		.GetDancer(req.params.wscid)
+		.then(result => {
+			logger.info(`Found dancer ${req.params.wscid}`);
+			let newDancer = new dancerDef();
+			newDancer.LoadWSDC(result);
+			res.send({ constructed: newDancer });
+		})
+		.catch(error => {
+			logger.error(`Get dancer ${req.params.wscid} error: ${error}`);
+			res.send({ error });
+		});
 });
-app.post('/api/dancer/:wscid', function(req, res){
-    wsdcAPI.GetDancer(req.params.wscid)
-        .then((result) => {
-            let newDancer = new dancerDef();
-            newDancer.LoadWSDC(result);
-            fireDB.WriteDancerToFirebase(result.wscid, newDancer);
-            res.send(newDancer);
-        });
-});
+
 /*
 Commenting this out for future use when the api is fully built.
 app.post('/api/account/attend/:event_id/:account_id', function(req, res){
@@ -88,6 +103,6 @@ app.put('/api/account/', function(req, res){
         });    
 });
 */
-app.listen(9000, function(){
-    console.log("listening to this joint on port 9000");
+app.listen(9000, function() {
+	console.log('listening to this joint on port 9000');
 });

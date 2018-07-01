@@ -99,11 +99,17 @@ class DB{
         });
     }
     GetDancersByDivision(division){
-        let ref = this.Con.ref('dancers');
-        ref.orderByChild('Division').equalTo(DancerDef.SanitizeDivision(division)).once('value')
-            .then((snapshot) => {
-                console.log(snapshot.val());
-            });
+        return new Promise((resolve, reject) => {
+            let ref = this.Con.ref('dancers');
+            ref.orderByChild('Division').equalTo(DancerDef.SanitizeDivision(division)).once('value')
+                .then((snapshot) => {
+                    console.log(snapshot.val());
+                    resolve(snapshot.val());
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });        
     }
     //Create synthetic indexes for the division/role/qualifies
     GetDancersByDivisionRoleQualifies(divisionInput, roleInput, qualifies){        
