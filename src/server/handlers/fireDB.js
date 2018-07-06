@@ -115,7 +115,6 @@ class DB {
 		});
     }
     GetAccountById(id) {
-		console.log("Getting account: ", id);
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts/${id}`)
 				.once('value')
