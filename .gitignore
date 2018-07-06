@@ -8,3 +8,5 @@ src/server/handlers/dbConfig.js
 
 logs
 logs/*
+src/client/js/config/config.js
+src/server/handlers/trackmyswing.log

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev-server": "node ./src/server/server.js",
+    "dev-server": "set NODE_ENV=dev && node ./src/server/server.js",
     "prod-server": "set NODE_ENV=production && node ./src/server/server.js",
     "start-forever-dev-server": "forever start ./src/server/server.js",
     "stop-forever-dev-server": "forever stop ./src/server/server.js",
@@ -32,7 +32,8 @@
     "fs": "0.0.1-security",
     "https": "^1.0.0",
     "memory-cache": "^0.2.0",
-    "querystring": "^0.2.0"
+    "querystring": "^0.2.0",
+    "react-facebook-login": "^4.0.1"
   },
   "devDependencies": {
     "axios": "^0.16.2",

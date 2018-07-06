@@ -24,6 +24,9 @@ app.use(bodyParser.json());
 app.get('/', function(req, res) {
 	res.sendFile(publicDir + '/home.html');
 });
+app.get('/account', function(req, res) {
+	res.sendFile(publicDir + '/account.html');
+});
 
 app.use((req, res, next) => {
 	res.header({
@@ -77,8 +80,6 @@ app.get('/api/dancer/:wscid', memcache(3600), function(req, res) {
 		});
 });
 
-/*
-Commenting this out for future use when the api is fully built.
 app.post('/api/account/attend/:event_id/:account_id', function(req, res){
     fireDB.WriteAttendanceToEvent(req.params.event_id, req.params.account_id)
         .then((result) => {
@@ -89,11 +90,15 @@ app.post('/api/account/attend/:event_id/:account_id', function(req, res){
         });    
 });
 
-app.put('/api/account/', function(req, res){
-    let account = new accountDef(req.body);
+app.put('/api/account/', async function(req, res){
+	let account = new accountDef(req.body);
+	console.log("Found account: ", account);
     if(account.HasError()){//Create more full error handling
         res.send("Error");
-    }
+	}
+	// TODO: this belongs in the account getter
+	let dancer = await wsdcAPI.GetDancer(account.Wscid);
+	console.log("Found dancer: ", dancer);
     fireDB.WriteAccountToFirebase(account)
         .then((result) => {
             res.send(account); 
@@ -102,7 +107,10 @@ app.put('/api/account/', function(req, res){
             res.send("Error: " + error);  
         });    
 });
-*/
+app.get('/api/account/facebook/', async function(req, res){
+	console.log("received content from facebook: ", req.body, req.params);
+});
+
 app.listen(9000, function() {
 	console.log('listening to this joint on port 9000');
 });
