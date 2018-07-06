@@ -31,7 +31,8 @@ class App extends Component {
                 email: '',
                 firstName: '',
                 lastName: '',
-                wsdcid: '',
+				wsdcid: '',
+				profileImageUrl: '',
 			},
 			dancers: [],
 		};
@@ -103,7 +104,8 @@ class App extends Component {
 				lastName: data.last_name,
 				userName: `${data.first_name} ${data.last_name}`,
 				location: data.location.name,
-				facebookId: data.id
+				facebookId: data.id,
+				profileImageUrl: data.picture.data.url
 			}),
 		});
 		this.createAccount();

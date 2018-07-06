@@ -115,12 +115,17 @@ class DB {
 		});
     }
     GetAccountById(id) {
-		return Promise((resolve, reject) => {
-			this.Con.ref('accounts')
+		console.log("Getting account: ", id);
+		return new Promise((resolve, reject) => {
+			this.Con.ref(`accounts/${id}`)
 				.once('value')
 				.then(snapshot => {
                     resolve(snapshot.val());
-                });
+				})
+				.catch(error => {
+					console.log(`Getting account ${id} error: ${error}`);
+					reject(error);
+				});
 		});
 	}
 	GetDancersByDivision(division) {

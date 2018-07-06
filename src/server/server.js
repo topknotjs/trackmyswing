@@ -107,6 +107,16 @@ app.put('/api/account/', async function(req, res){
             res.send("Error: " + error);  
         });    
 });
+app.get('/api/account/:id', function(req, res){
+	// TODO: this belongs in the account getter
+    fireDB.GetAccountById(req.params.id)
+        .then((result) => {
+            res.send(result); 
+        })
+        .catch((error) => {
+            res.send("Error: " + error);  
+        });    
+});
 app.get('/api/account/facebook/', async function(req, res){
 	console.log("received content from facebook: ", req.body, req.params);
 });
