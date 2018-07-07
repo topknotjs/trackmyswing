@@ -2,11 +2,6 @@
 // TODO: Change wscid to wsdcid
 class Account{
     constructor(data){
-        if(!data) return;
-        //console.log(data);
-        if(!this.ValidateAccount(data)){
-            return;
-        }
         this.Username = "";
         this.Email = "";
         this.FirstName = "";
@@ -16,11 +11,16 @@ class Account{
         this.FacebookId = null;
         this.Location = "";
         this._error = false;
+
+        if(!data) return;
+        if(!this.ValidateAccount(data)){
+            return;
+        }
         this.ProcessAccount(data);
     }
     toJSON(){
         return {
-            Username: this.Username,
+            Username: this.Username,    
             Email: this.Email,
             FirstName: this.FirstName,
             LastName: this.LastName,
@@ -30,6 +30,10 @@ class Account{
             Location: this.Location
         };
     } 
+    setError(msg){
+        console.log("Account error message: ", msg);
+        this._error = msg;
+    }
     ProcessAccount(data){
         this.Username = (data.hasOwnProperty('userName')) ? data.userName : "";
         this.Email = (data.hasOwnProperty('email')) ? data.email : "";
@@ -39,13 +43,29 @@ class Account{
         this.Wscid = (data.hasOwnProperty('wsdcid')) ? data.wsdcid : "";
         this.FacebookId = (data.hasOwnProperty('facebookId')) ? data.facebookId : "";
         this.Location = (data.hasOwnProperty('location')) ? data.location : "";
-        console.log(this);
+        if(this.Email === ""){
+            this.setError("No email on account.");
+        }
     }
     ValidateAccount(data){
         return true;
     }
     HasError(){
         return this._error;
+    }
+    Copy(data){
+        for(let key in this){
+            if(!this.hasOwnProperty(key) || !data.hasOwnProperty(key) || !data[key]) continue;
+            this[key] = data[key];
+        }
+    }
+    static AccountFromFirebase(data){
+        let newAccount = new Account();
+        for(let key in this){
+            if(!newAccount.hasOwnProperty(key) || !data.hasOwnProperty(key) || !data[key]) continue;
+            newAccount[key] = data[key];
+        }
+        return newAccount;
     }
 }
 module.exports = Account;

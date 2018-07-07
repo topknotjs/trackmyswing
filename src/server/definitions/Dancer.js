@@ -105,5 +105,12 @@ class Dancer{
         }
         return parseInt(wscidInput);
     }
+    // TODO: Create an email format sanitizer
+    static SanitizeEmail(emailInput){
+        if(typeof emailInput !== 'string'){
+            return null;
+        }
+        return emailInput;
+    }
 }
 module.exports = Dancer;

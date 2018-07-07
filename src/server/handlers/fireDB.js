@@ -1,7 +1,7 @@
 let dbConfig = require('./dbConfig');
 let firebase = require('firebase');
 let DancerDef = require('../definitions/Dancer');
-
+let AccountDef = require('../definitions/Account');
 class DB {
 	constructor() {
 		try {
@@ -85,7 +85,30 @@ class DB {
 			this.Con.ref('accounts').push(account.toJSON(), () => resolve());
 		});
 	}
-	
+	// TODO: Error handle when id does not exist
+	UpdateAccountInFirebase(id, data){
+		if(data.hasOwnProperty('email')){
+			delete data.email;
+		}
+		let accountUpdateData = new AccountDef(data).toJSON();
+		return new Promise((resolve, reject) => {
+			this.GetAccountById(id)
+				.then(updateableAccount => {
+					for(let key in accountUpdateData){
+						if(!accountUpdateData.hasOwnProperty(key) || !accountUpdateData.hasOwnProperty(key) || !accountUpdateData[key]) continue;
+						updateableAccount[key] = accountUpdateData[key];
+					}					
+					return this.Con.ref('accounts/' + id).set(updateableAccount);
+				})
+				.then(result => {
+					resolve(result);
+				})
+				.catch(error => {
+					console.log("Error: ", error);
+					reject(error);
+				});
+		});
+	}
 	WriteAttendanceToEvent(eventId, accountId) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref('eventAttendees/' + eventId)
@@ -117,6 +140,21 @@ class DB {
     GetAccountById(id) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts/${id}`)
+				.once('value')
+				.then(snapshot => {
+                    resolve(snapshot.val());
+				})
+				.catch(error => {
+					console.log(`Getting account ${id} error: ${error}`);
+					reject(error);
+				});
+		});
+	}
+	async GetAccountByEmail(email){
+		return new Promise((resolve, reject) => {
+			this.Con.ref(`accounts`)
+				.orderByChild('Email')
+				.equalTo(DancerDef.SanitizeEmail(email))
 				.once('value')
 				.then(snapshot => {
                     resolve(snapshot.val());

@@ -21,19 +21,21 @@ const ROLES = [
 	{ Key: 'follower', Label: 'Follower' },
 ];
 
+const DefaultAccountData = {
+	userName: '',
+	email: '',
+	firstName: '',
+	lastName: '',
+	wsdcid: '',
+	profileImageUrl: '',
+};
+
 const ApiService = new API();
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			form: {
-                userName: '',
-                email: '',
-                firstName: '',
-                lastName: '',
-				wsdcid: '',
-				profileImageUrl: '',
-			},
+			form: Object.assign({}, DefaultAccountData),
 			dancers: [],
 		};
 		// Login status received
@@ -135,6 +137,7 @@ class App extends Component {
 						<input
 							name="username"
 							id="username"
+							value={this.state.form.userName}
 							onChange={e => this.onUsernameUpdate(e)}
 						/>
 					</div>
@@ -143,7 +146,8 @@ class App extends Component {
 						<input
 							name="email"
                             id="email"
-                            type="email"
+							type="email"
+							value={this.state.form.email}
 							onChange={e => this.onEmailUpdate(e)}
 						/>
 					</div>
@@ -151,7 +155,8 @@ class App extends Component {
 						<label htmlFor="firstname">First Name: </label>
 						<input
 							name="firstname"
-							name="firstname"
+							id="firstname"
+							value={this.state.form.firstName}
 							onChange={e => this.onFirstnameUpdate(e)}
 						/>
 					</div>
@@ -160,6 +165,7 @@ class App extends Component {
 						<input
 							name="lastname"
 							id="lastname"
+							value={this.state.form.lastName}
 							onChange={e => this.onLastnameUpdate(e)}
 						/>
 					</div>
@@ -168,6 +174,7 @@ class App extends Component {
 						<input
 							name="wsdcid"
 							id="wsdcid"
+							value={this.state.form.wsdcid}
 							onChange={e => this.onWSDCUpdate(e)}
 						/>
 					</div>

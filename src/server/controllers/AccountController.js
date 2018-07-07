@@ -17,33 +17,79 @@ router.post('/attend/:event_id/:account_id', function(req, res){
             res.send("Success");        
         })
         .catch((error) => {
-            res.send("Error: " + error);  
+            res
+                .status(400)
+                .send("Error: " + error);  
         });    
 });
 
-router.put('/', function(req, res){
+router.put('/', async function(req, res){
 	let account = new accountDef(req.body);
 	console.log("Found account: ", account);
     if(account.HasError()){//Create more full error handling
-        res.send("Error");
-	}
+        res
+            .status(400)
+            .send("Error");
+        return;
+    }
+    let dupAccount = await fireDB.GetAccountByEmail(account.Email);
+    if(!!dupAccount){
+        res.send("Error: duplicate account");
+        return;
+    }
     fireDB.WriteAccountToFirebase(account)
         .then((result) => {
             res.send(account); 
         })
         .catch((error) => {
-            res.send("Error: " + error);  
+            res
+                .status(400)
+                .send("Error: " + error);  
         });    
 });
-router.get('/:id', function(req, res){
-	// TODO: this belongs in the account getter
-    fireDB.GetAccountById(req.params.id)
+router.post('/:id', async function(req, res){
+    if(!req.params.id || ! req.body){//Create more full error handling
+        res
+            .status(400)
+            .send("Error: Missing parameters");
+        return;
+    }
+    let { id } = req.params;
+    let data = req.body;
+    fireDB.UpdateAccountInFirebase(id, data)
         .then((result) => {
             res.send(result); 
         })
         .catch((error) => {
-            res.send("Error: " + error);  
+            res
+                .status(400)
+                .send("Error: " + error);  
         });    
+});
+router.get('/:id', function(req, res){
+    // TODO: this belongs in the account getter
+    let { id } = req.params;
+    if(id.indexOf('@') !== -1){
+        fireDB.GetAccountByEmail(id)
+            .then((result) => {
+                res.send(result); 
+            })
+            .catch((error) => {
+                res
+                    .status(400)
+                    .send("Error: " + error);  
+            });        
+    }else{
+        fireDB.GetAccountById(id)
+            .then((result) => {
+                res.send(result); 
+            })
+            .catch((error) => {
+                res
+                    .status(400)
+                    .send("Error: " + error);  
+            });    
+    }
 });
 router.get('/facebook/', async function(req, res){
 	console.log("received content from facebook: ", req.body, req.params);
