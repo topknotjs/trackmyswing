@@ -72,6 +72,20 @@ class DB {
 				});
 		});
 	}
+	GetEvent(id) {
+		return new Promise((resolve, reject) => {
+			this.Con.ref('events/' + id)
+				.once('value')
+				.then(snapshot => {
+					//console.log("Events: ", snapshot.val());
+					resolve(snapshot.val());
+				})
+				.catch(error => {
+					console.log("Event error: ", error);
+					reject(error);
+				});
+		});
+	}
 	/**
 	 * Figure out a key to write the event to the database
 	 */
@@ -86,25 +100,32 @@ class DB {
 		});
 	}
 	// TODO: Error handle when id does not exist
-	UpdateAccountInFirebase(id, data){
-		if(data.hasOwnProperty('email')){
+	UpdateAccountInFirebase(id, data) {
+		if (data.hasOwnProperty('email')) {
 			delete data.email;
 		}
 		let accountUpdateData = new AccountDef(data).toJSON();
 		return new Promise((resolve, reject) => {
 			this.GetAccountById(id)
 				.then(updateableAccount => {
-					for(let key in accountUpdateData){
-						if(!accountUpdateData.hasOwnProperty(key) || !accountUpdateData.hasOwnProperty(key) || !accountUpdateData[key]) continue;
+					for (let key in accountUpdateData) {
+						if (
+							!accountUpdateData.hasOwnProperty(key) ||
+							!accountUpdateData.hasOwnProperty(key) ||
+							!accountUpdateData[key]
+						)
+							continue;
 						updateableAccount[key] = accountUpdateData[key];
-					}					
-					return this.Con.ref('accounts/' + id).set(updateableAccount);
+					}
+					return this.Con.ref('accounts/' + id).set(
+						updateableAccount
+					);
 				})
 				.then(result => {
 					resolve(result);
 				})
 				.catch(error => {
-					console.log("Error: ", error);
+					console.log('Error: ', error);
 					reject(error);
 				});
 		});
@@ -136,13 +157,13 @@ class DB {
 				console.log('Set complete!: ', res);
 			});
 		});
-    }
-    GetAccountById(id) {
+	}
+	GetAccountById(id) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts/${id}`)
 				.once('value')
 				.then(snapshot => {
-                    resolve(snapshot.val());
+					resolve(snapshot.val());
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);
@@ -150,14 +171,14 @@ class DB {
 				});
 		});
 	}
-	async GetAccountByEmail(email){
+	async GetAccountByEmail(email) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts`)
 				.orderByChild('Email')
 				.equalTo(DancerDef.SanitizeEmail(email))
 				.once('value')
 				.then(snapshot => {
-                    resolve(snapshot.val());
+					resolve(snapshot.val());
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);

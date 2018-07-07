@@ -3,6 +3,7 @@ let path = require('path');
 const DancersController = require('./controllers/DancersController');
 const DancerController = require('./controllers/DancerController');
 const AccountController = require('./controllers/AccountController');
+const EventsController = require('./controllers/EventsController');
 let dancers = require('./handlers/dancers');
 let wsdc = require('./handlers/wsdc');
 let DB = require('./handlers/db');
@@ -44,6 +45,7 @@ app.use('/api/dancers', memcache(3600), DancersController);
 app.use('/api/dancer', memcache(3600), DancerController);
 
 app.use('/api/account', AccountController);
+app.use('/api/events', EventsController);
 
 app.listen(9000, function() {
 	console.log('listening to this joint on port 9000');
