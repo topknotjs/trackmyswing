@@ -24,12 +24,6 @@ let dancersAPI = dancers();
 let fireDB = fDB();
 var publicDir = path.resolve(__dirname, '../../public');
 
-// if(environment === 'production'){
-// 	app.use('/static', express.static(_dirname + '/public'));
-// }else{
-// 	app.use('/static', express.static(_dirname));
-// }
-
 app.use(express.static(publicDir));
 
 app.use(bodyParser.json());
@@ -54,6 +48,10 @@ app.use('/api/dancer', memcache(3600), DancerController);
 app.use('/api/account', AccountController);
 app.use('/api/events', EventsController);
 
-app.listen(8080, function() {
+let port = 9000;
+if(environment === 'production'){
+	port = 80;
+}
+app.listen(port, function() {
 	console.log('listening to this joint on port 9000');
 });
