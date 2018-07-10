@@ -54,6 +54,6 @@ app.use('/api/dancer', memcache(3600), DancerController);
 app.use('/api/account', AccountController);
 app.use('/api/events', EventsController);
 
-app.listen(9000, function() {
+app.listen(8080, function() {
 	console.log('listening to this joint on port 9000');
 });
