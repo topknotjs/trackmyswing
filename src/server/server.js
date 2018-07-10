@@ -24,7 +24,14 @@ let dancersAPI = dancers();
 let fireDB = fDB();
 var publicDir = path.resolve(__dirname, '../../public');
 
-app.use('/static', express.static('public'));
+// if(environment === 'production'){
+// 	app.use('/static', express.static(_dirname + '/public'));
+// }else{
+// 	app.use('/static', express.static(_dirname));
+// }
+
+app.use('/static', express.static(publicDir));
+
 app.use(bodyParser.json());
 app.get('/', function(req, res) {
 	res.sendFile(publicDir + '/home.html');
