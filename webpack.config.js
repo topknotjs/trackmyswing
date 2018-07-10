@@ -56,6 +56,5 @@ module.exports = {
                 loader: 'url-loader?limit=10000&mimetype=image/svg+xml'
             }
         ]
-    },
-    watch: true
+    }
 };

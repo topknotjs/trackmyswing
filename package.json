@@ -13,7 +13,8 @@
     "stop-forever-prod-server": "forever stop ./src/server/server.js",
     "backup-dancers": "node ./src/server/scripts/processDancers.js",
     "backup-events": "node ./src/server/scripts/processEvents.js",
-    "test-fb": "node ./src/server/scripts/testFirebase.js"
+    "test-fb": "node ./src/server/scripts/testFirebase.js",
+    "build-dev": "webpack"
   },
   "repository": {
     "type": "git",
