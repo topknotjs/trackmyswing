@@ -48,10 +48,6 @@ app.use('/api/dancer', memcache(3600), DancerController);
 app.use('/api/account', AccountController);
 app.use('/api/events', EventsController);
 
-let port = 9000;
-if(environment === 'production'){
-	port = 80;
-}
-app.listen(port, function() {
-	console.log('listening to this joint on port 9000');
+app.listen(3000, function() {
+	console.log('listening to this joint on port 3000');
 });
