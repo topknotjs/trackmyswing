@@ -6,9 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-server": "set NODE_ENV=dev && node ./src/server/server.js",
-    "prod-server": "set NODE_ENV=production && node ./src/server/server.js",
+    "prod-server": "export NODE_ENV=production && node ./src/server/server.js",
     "start-forever-dev-server": "set NODE_ENV=dev && forever start ./src/server/server.js",
     "stop-forever-dev-server": "forever stop ./src/server/server.js",
+    "start-forever-prod-server": "export NODE_ENV=dev && forever start ./src/server/server.js",
+    "stop-forever-prod-server": "forever stop ./src/server/server.js",
     "backup-dancers": "node ./src/server/scripts/processDancers.js",
     "backup-events": "node ./src/server/scripts/processEvents.js",
     "test-fb": "node ./src/server/scripts/testFirebase.js"
