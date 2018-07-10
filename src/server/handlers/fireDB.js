@@ -29,14 +29,17 @@ class DB {
 	Authenticate() {
 		firebase
 			.auth()
-			.signInWithEmailAndPassword('kaleb2azriel@gmail.com', 'bloodred911')
+			.signInWithEmailAndPassword(
+				dbConfig.firebase.username,
+				dbConfig.firebase.password
+			)
 			.catch(function(sError) {
 				console.log('Sign in error: ', sError);
 				firebase
 					.auth()
 					.createUserWithEmailAndPassword(
-						'kaleb2azriel@gmail.com',
-						'bloodred911'
+						dbConfig.firebase.username,
+						dbConfig.firebase.password
 					)
 					.catch(cError => {
 						console.log('Error with auth: ', cError);
@@ -77,15 +80,29 @@ class DB {
 			this.Con.ref('events/' + id)
 				.once('value')
 				.then(snapshot => {
-					//console.log("Events: ", snapshot.val());
 					resolve(snapshot.val());
 				})
 				.catch(error => {
-					console.log("Event error: ", error);
+					console.log('Event error: ', error);
 					reject(error);
 				});
 		});
 	}
+	// TODO: Make updating events available when necessary
+	// UpdateEvent(id, data){
+
+	// 	return new Promise((resolve, reject) => {
+	// 		this.GetEvent(id)
+	// 			.then(snapshot => {
+	// 				let event =
+	// 				return this.Con.ref('events/' + eventkey).set(event, () => resolve());
+	// 			})
+	// 			.catch(error => {
+	// 				console.log("Error updating event: ", error);
+	// 				reject(error);
+	// 			});
+	// 	});
+	// }
 	/**
 	 * Figure out a key to write the event to the database
 	 */
