@@ -30,7 +30,7 @@ var publicDir = path.resolve(__dirname, '../../public');
 // 	app.use('/static', express.static(_dirname));
 // }
 
-app.use('/static', express.static(publicDir));
+app.use(express.static(publicDir));
 
 app.use(bodyParser.json());
 app.get('/', function(req, res) {
