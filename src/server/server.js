@@ -34,6 +34,10 @@ app.get('/account', function(req, res) {
 	res.sendFile(publicDir + '/account.html');
 });
 
+/**
+ * This is a hacked cache-control
+ * Need to finesse this with express
+ */
 app.use((req, res, next) => {
 	res.header({
 		'Cache-Control': 'max-age=36000',
