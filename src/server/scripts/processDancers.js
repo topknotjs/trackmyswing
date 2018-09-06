@@ -8,11 +8,35 @@
 let wsdcConfig = require ('../handlers/wsdc');
 let fDB = require('../handlers/fireDB');
 let dancerDef = require('../definitions/Dancer');
-
+const LoggerService = require('../handlers/logger');
 let wsdc = wsdcConfig();
 let fireDB = fDB();
 let finish = () => {
     process.exit("Finished!");
+};
+const logger = new LoggerService();
+let begin = (i) => {
+    return wsdc.GetDancers()
+        .then((results) => {
+            processDancerValues(results)
+                .then(() => {
+                    finish();
+                })
+                .catch((error) => {
+                    logger.log(`Process error: ${error}`);
+                    finish();
+                });
+        })
+        .catch((error) => {
+            if(i <= 0){
+                logger.log(`Get dancer failure: ${error}`);
+            }else{
+                logger.log("Get dancer error. Retrying in 3 seconds.");
+                setTimeout(() => {
+                    begin(i - 1);
+                }, 3000);                
+            }
+        });
 };
 let processDancerValues = (results) => {
     return new Promise((resolve, reject) => {
@@ -31,14 +55,19 @@ let processDancerValues = (results) => {
                         results.forEach((result) => {
                             if(!result.hasOwnProperty('dancer') || !result.dancer.hasOwnProperty('wscid')) return;
                             let dancer = new dancerDef();
-                            dancer.LoadWSDC(result);                   
-                            console.log("Loading dancer: ", dancer.WSCID);
+                            dancer.LoadWSDC(result);
+                            if(dancer.Error !== false){            
+                                logger.log("Found error: ", dancer.Error);                    
+                                return;
+                            }
+                            logger.log(`Loading dancer ${dancer.WSCID} => ${JSON.stringify(dancer)}`);
                             fireDB.WriteDancerToFirebase(dancer.WSCID, dancer);
                         });
                         resolve("done");
                     })
                     .catch((error) => {
-                        reject("Problem with promise set: ", error);
+                        reject(error);
+                        logger.error(`Problem with promise set: ${error}`);
                     });
             });        
             return nextPromise;
@@ -46,16 +75,16 @@ let processDancerValues = (results) => {
 
         let run = (i, step) => {
             if(step == 0){
-                console.log("Exit 1");
+                logger.log("Exit 1");
                 resolve();
                 return;
             }else if((i + step) >= results.length){
-                console.log(`Exit 2 - [i: ${i} step: ${step} length: ${results.length}]`);
+                logger.log(`Exit 2 - [i: ${i} step: ${step} length: ${results.length}]`);
                 let increment = results.length - i - 1;
                 run(i, increment);
                 return;
             }
-            console.log(`Fetching: ${i} - ${i + step}`);
+            logger.log(`Fetching: ${i} - ${i + step}`);
             fetchDancers(results.slice(i, i + step))
                 .then(() => {
                     setTimeout(() => {
@@ -63,22 +92,11 @@ let processDancerValues = (results) => {
                     }, 2000);                
                 })
                 .catch((error) => {
-                    reject("Internal error: ", error);
+                    reject(error);
                 });            
         };
         run(0, 10);
     });
 };
 
-wsdc.GetDancers()
-    .then((results) => {
-        processDancerValues(results)
-            .then(() => {
-                finish();
-            })
-            .catch((error) => {
-                console.log("Error: ", error);
-                finish();
-            });
-    });
-
+begin(3);

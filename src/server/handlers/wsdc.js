@@ -4,6 +4,9 @@ let Event = require('../definitions/Event');
 let DancerDef = require('../definitions/Dancer');
 let CircularJson = require('circular-json');
 const querystring = require('querystring');
+const LoggerService = require('../handlers/logger');
+
+const logger = new LoggerService();
 class WSDC{
     constructor(){
         this.DancersUrl = "http://swingdancecouncil.herokuapp.com/pages/dancer_search_by_fragment.json?term=";
@@ -12,11 +15,13 @@ class WSDC{
     }
     GetDancers(){
         let dPromise = new Promise((resolve, reject) => {
-            axios.get(this.DancersUrl)
+            axios.get(this.DancersUrl, {timeout: 10000})
                 .then((results) => {
                     resolve(results.data);
                 })
                 .catch((error) => {
+                    console.log("Failed to get url: ", this.DancersUrl);
+                    logger.error(`Failed to get url: ${this.DancersUrl}`);
                     reject(error);
                 });
         });

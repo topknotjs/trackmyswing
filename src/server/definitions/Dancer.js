@@ -1,3 +1,6 @@
+const LoggerService = require('../handlers/logger');
+
+const logger = new LoggerService();
 const PLACEMENTS_KEY = 'West Coast Swing';
 const DEFAULT_RELEVENCE = 5;
 const DIVISION_MAP = {
@@ -8,6 +11,7 @@ const DIVISION_MAP = {
     'Novice': {Key: 'novice', MaxPoints: 15},
     'Newcomer': {Key: 'newcomer', MaxPoints: 1}    
 }
+
 class Dancer{
     constructor(config){
         if(!config) return;
@@ -24,8 +28,8 @@ class Dancer{
     LoadWSDC(config){
         if(!config) return;
         let dancer = config.dancer;
-        //Load up dancer basic info
-        //TODO: Validate this info!
+        // Load up dancer basic info
+        // TODO: Validate this info!
         this.FirstName = dancer.first_name;
         this.LastName = dancer.last_name;
         this.WSCID = dancer.wscid;
@@ -35,14 +39,24 @@ class Dancer{
         this.Relevance = DEFAULT_RELEVENCE;
         this.QualifiesForNextDivision = false;
         this.DivisionRoleQualifies = null;
-        this.GetDivision(config.placements[PLACEMENTS_KEY]);
+        this.Error = false;
+        if(config.placements.hasOwnProperty(PLACEMENTS_KEY)){
+            this.GetDivision(config.placements[PLACEMENTS_KEY]);
+        }else{
+            this.Error = "No west coast swing points.";
+            logger.log(`Dancer ${this.WSCID} error => ${this.Error}`);
+        }
     }
-    GetDivision(placements){
-        if(!Array.isArray(placements) || !placements.length) return;
+    GetDivision(danceTypePlacements){
+        // Sanity check the data
+        if(!danceTypePlacements) return;
+        let placements = Object.values(danceTypePlacements);
+        if(!Array.isArray(placements) || !placements.length) return;        
         let currentIndex = 0;
         let yearCoefficient = 1000 * 60 * 60 * 24 * 360;
         let divisionConfig = placements[currentIndex];
-        //Attempt to find pointed JJ division
+
+        // Attempt to find pointed JJ division
         while(currentIndex < placements.length){
             let currentPlacement = placements[currentIndex++];
             if(DIVISION_MAP.hasOwnProperty(currentPlacement.division.name)){
@@ -50,7 +64,8 @@ class Dancer{
                 break;
             }
         }
-        //Determine Relevance by how many years ago the last event placement was
+
+        // Determine Relevance by how many years ago the last event placement was
         if(divisionConfig.competitions.length > 0 && divisionConfig.competitions[0].event != null){
             let recentDateStr = divisionConfig.competitions[0].event.date;
             let parts = recentDateStr.split(" ");
@@ -61,7 +76,8 @@ class Dancer{
                 this.Relevance = years;
             }
         }
-        //Determine Division, Role, Qualifies
+
+        // Determine Division, Role, Qualifies
         if(DIVISION_MAP.hasOwnProperty(divisionConfig.division.name)){
             let identifiedDivision = DIVISION_MAP[divisionConfig.division.name];
             this.Division = identifiedDivision.Key;
@@ -105,7 +121,7 @@ class Dancer{
         }
         return parseInt(wscidInput);
     }
-    // TODO: Create an email format sanitizer
+    //  TODO: Create an email format sanitizer
     static SanitizeEmail(emailInput){
         if(typeof emailInput !== 'string'){
             return null;
