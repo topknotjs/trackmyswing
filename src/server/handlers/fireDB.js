@@ -122,9 +122,10 @@ class DB {
 			delete data.email;
 		}
 		let accountUpdateData = new AccountDef(data).toJSON();
+		let updatedAccount = null;
 		return new Promise((resolve, reject) => {
 			this.GetAccountById(id)
-				.then(updateableAccount => {
+				.then(updateableAccount => {					
 					for (let key in accountUpdateData) {
 						if (
 							!accountUpdateData.hasOwnProperty(key) ||
@@ -134,12 +135,13 @@ class DB {
 							continue;
 						updateableAccount[key] = accountUpdateData[key];
 					}
+					updatedAccount = updateableAccount;
 					return this.Con.ref('accounts/' + id).set(
 						updateableAccount
 					);
 				})
 				.then(result => {
-					resolve(result);
+					resolve(updatedAccount);
 				})
 				.catch(error => {
 					console.log('Error: ', error);

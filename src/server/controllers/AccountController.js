@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/attend/:event_id/:account_id', function(req, res){
     fireDB.WriteAttendanceToEvent(req.params.event_id, req.params.account_id)
         .then((result) => {
-            res.send("Success");        
+            res.send("Success");
         })
         .catch((error) => {
             res
@@ -57,7 +57,7 @@ router.post('/:id', async function(req, res){
     let { id } = req.params;
     let data = req.body;
     fireDB.UpdateAccountInFirebase(id, data)
-        .then((result) => {
+        .then((result) => {            
             res.send(result); 
         })
         .catch((error) => {
