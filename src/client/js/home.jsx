@@ -26,17 +26,15 @@ class App extends Component{
         this.state = {
             form: {
                 division: '',
-                role: ''
+                role: '',
+                qualifies: false,
             },
             dancers: []
         };
-        this.onDivisionChange = this.onDivisionChange.bind(this);
-        this.onRoleChange = this.onRoleChange.bind(this);
-        this.onSubmitClicked = this.onSubmitClicked.bind(this);
     }
     searchDancers(){
-        let {division, role} = this.state.form;
-        ApiService.GetDancers(division, role)
+        let {division, role, qualifies} = this.state.form;
+        ApiService.GetDancers(division, role, qualifies)
             .then((results) => {
                 this.setState({dancers: results});
             })
@@ -54,6 +52,10 @@ class App extends Component{
         let form = this.state.form;
         this.setState({form: Object.assign({}, form, {role: $event.target.value})});
     }
+    onQualifiesChange($event){
+        let form = this.state.form;
+        this.setState({form: Object.assign({}, form, {qualifies: $event.target.checked})});
+    }
     onSubmitClicked(){
         this.searchDancers();
     }
@@ -69,19 +71,20 @@ class App extends Component{
                 <h1>Find my Strictly</h1>
             </header>
             <section className="content-area">
-                <select id="division" onChange={this.onDivisionChange}>
+                <select id="division" onChange={(e) => this.onDivisionChange(e)}>
                     <option value="">Select a division...</option>
                     {DIVISIONS.map((division, index) => {
                         return (<option key={index} value={division.Key}>{division.Label}</option>);
                     })}
                 </select>
-                <select id="role" onChange={this.onRoleChange}>
+                <select id="role" onChange={(e) => this.onRoleChange(e)}>
                     <option value="">Select a role...</option>
                     {ROLES.map((role, index) => {
                         return (<option key={index} value={role.Key}>{role.Label}</option>);
                     })}
                 </select>
-                <button onClick={this.onSubmitClicked}>Submit</button>
+                <input name="qualifies" type="checkbox" id="qualifies" onChange={(e) => this.onQualifiesChange(e)} />
+                <button onClick={() => this.onSubmitClicked()}>Submit</button>
                 <ul className="dancer-list">
                     {this.state.dancers.map((dancer, index) => {
                         return (<li key={index}>{dancer.FirstName} {dancer.LastName}</li>)

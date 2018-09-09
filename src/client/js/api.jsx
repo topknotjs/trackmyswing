@@ -11,9 +11,9 @@ export default class API{
         }
         return axios(config);
     }
-    GetDancers(division, role){
+    GetDancers(division, role, qualifies){
         return new Promise((resolve, reject) => {
-            this.call(`/api/dancers/${division}/${role}`, 'GET')
+            this.call(`/api/dancers/${division}/${role}${qualifies ? '?qualifies=true' : ''}`, 'GET')
             .then((result) => {
                 resolve(result.data);
             })

@@ -4,13 +4,13 @@ const logger = new LoggerService();
 const PLACEMENTS_KEY = 'West Coast Swing';
 const DEFAULT_RELEVENCE = 5;
 const DIVISION_MAP = {
-    'Champions': {Key: 'champion', MaxPoints: null},
-    'All-Stars': {Key: 'allstar', MaxPoints: null},
-    'Advanced': {Key: 'advanced', MaxPoints: 45},
-    'Intermediate': {Key: 'intermediate', MaxPoints: 30},
-    'Novice': {Key: 'novice', MaxPoints: 15},
-    'Newcomer': {Key: 'newcomer', MaxPoints: 1}    
-}
+    'Champions': {Key: 'champion', MaxPoints: null, PreviousDivision: 'All-Stars'},
+    'All-Stars': {Key: 'allstar', MaxPoints: null, PreviousDivision: 'Advanced'},
+    'Advanced': {Key: 'advanced', MaxPoints: 45, PreviousDivision: 'Intermediate'},
+    'Intermediate': {Key: 'intermediate', MaxPoints: 30, PreviousDivision: 'Novice'},
+    'Novice': {Key: 'novice', MaxPoints: 15, PreviousDivision: 'Newcomer'},
+    'Newcomer': {Key: 'newcomer', MaxPoints: 1, PreviousDivision: null},    
+};
 
 class Dancer{
     constructor(config){
@@ -127,6 +127,25 @@ class Dancer{
             return null;
         }
         return emailInput;
+    }
+
+    static GetPreviousDivision(division){
+        let divisionValues = Object.values(DIVISION_MAP);
+        for(let i = 0, len = divisionValues.length; i < len; i++ ){
+            if(divisionValues[i].Key === division){
+                return divisionValues[i].PreviousDivision;
+            }
+        }
+        return null;
+    }
+    static IsPreviousDivisionAvailable(division){
+        let divisionValues = Object.values(DIVISION_MAP);
+        for(let i = 0, len = divisionValues.length; i < len; i++ ){
+            if(divisionValues[i].Key === division){
+                return divisionValues[i].PreviousDivision !== null;
+            }
+        }
+        return false;
     }
 }
 module.exports = Dancer;

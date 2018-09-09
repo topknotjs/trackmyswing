@@ -231,13 +231,25 @@ class DB {
 				reject('Bad role input.');
 				return;
 			}
-			let key = `${division}-${role}${qualifies ? '-q' : ''}`;
 			let ref = this.Con.ref('dancers');
-			ref.orderByChild('DivisionRoleQualifies')
-				.equalTo(key)
-				.once('value')
-				.then(snapshot => {
-					let compMap = snapshot.val(),
+			const keys = [
+				`${division}-${role}`,
+				`${division}-${role}-q`
+			], queries = [];
+			if(qualifies && DancerDef.IsPreviousDivisionAvailable(division)){
+				keys.push(`${DancerDef.SanitizeDivision(DancerDef.GetPreviousDivision(division))}-${role}-q`);
+			}
+			keys.forEach((key) => {
+				queries.push(ref.orderByChild('DivisionRoleQualifies').equalTo(key).once('value'));
+			});
+			Promise.all(queries)
+				.then(snapshots => {
+					let compMap = snapshots.reduce((acc, snapshot) => {
+							if(!snapshot.val()){
+								return acc;
+							}
+							return acc.concat(Object.values(snapshot.val()));
+						}, []),
 						dancersArray = [];
 					for (let key in compMap) {
 						dancersArray.push(new DancerDef(compMap[key]));
@@ -247,7 +259,7 @@ class DB {
 				.catch(error => {
 					console.log('Error: ', error);
 					reject(error);
-				});
+				});	
 		});
 	}
 }
