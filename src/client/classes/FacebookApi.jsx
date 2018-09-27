@@ -95,6 +95,7 @@ class FacebookApi {
 	static GetLoginStatus() {
 		let api = new FacebookApi();
 		return new Promise((resolve, reject) => {
+			console.log("Initing: ");
 			api.init()
 				.then(result => {
 					return api.checkLoginState();

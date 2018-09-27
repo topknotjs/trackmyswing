@@ -27,13 +27,6 @@ const port = 8888;
 app.use(express.static(publicDir));
 
 app.use(bodyParser.json());
-app.get('/', function(req, res) {
-	res.sendFile(publicDir + '/home.html');
-});
-app.get('/account', function(req, res) {
-	res.sendFile(publicDir + '/account.html');
-});
-
 /**
  * This is a hacked cache-control
  * Need to finesse this with express
@@ -51,6 +44,10 @@ app.use('/api/dancer', memcache(3600), DancerController);
 
 app.use('/api/account', AccountController);
 app.use('/api/events', EventsController);
+
+app.get('*', function(req, res) {
+	res.sendFile(publicDir + '/index.html');
+});
 
 app.listen(port, function() {
 	console.log('listening to this joint on port ' + port);

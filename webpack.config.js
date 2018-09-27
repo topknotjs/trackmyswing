@@ -4,8 +4,7 @@ var path = require('path');
 var BUILD_DIR = path.resolve(__dirname, 'public');
 module.exports = {
     entry: {
-        home: "./src/client/js/home.jsx",
-        account: "./src/client/js/account.jsx"
+        index: "./src/client/index.jsx",
     },
     output: {
         path: BUILD_DIR,
@@ -18,15 +17,14 @@ module.exports = {
                 test : /\.jsx|js?/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
-                
             },
             {
                 test: /\.html$/,
                 loader: "file-loader?name=[name].[ext]",
             },
-            { 
-                test: /\.css$/, 
-                loader: "style-loader!css-loader" 
+            {
+                test: /\.css$/,
+                loader: "style-loader!css-loader"
             },
             {
                 test: /\.scss$/,

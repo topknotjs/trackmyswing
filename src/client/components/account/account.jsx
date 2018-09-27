@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import API from './api.jsx';
+import API from './../../libs/api.jsx';
 import FacebookLogin from 'react-facebook-login';
-import Dancer from './classes/Dancers.jsx';
-import FacebookApi from './classes/FacebookApi.jsx';
-import configs from './config/config';
-
-require('../views/account.html');
+import Dancer from '../../classes/Dancers.jsx';
+import FacebookApi from '../../classes/FacebookApi.jsx';
+import configs from '../../config/config';
 
 const DIVISIONS = [
 	{ Key: 'champion', Label: 'Champions' },
@@ -31,7 +29,7 @@ const DefaultAccountData = {
 };
 
 const ApiService = new API();
-class App extends Component {
+export class Account extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -95,12 +93,12 @@ class App extends Component {
 	}
 	/**
 	 * Handle facebook stuffs
-	 * @param {} data 
+	 * @param {} data
 	 */
 	responseFacebook(data) {
 		// TODO: Sanitize the crap out of this!!
 		this.setState({
-			form: Object.assign({}, this.state.form, { 
+			form: Object.assign({}, this.state.form, {
 				email: data.email,
 				firstName: data.first_name,
 				lastName: data.last_name,
@@ -184,5 +182,3 @@ class App extends Component {
 		);
 	}
 }
-
-ReactDOM.render(<App />, document.getElementById('root'));
