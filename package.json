@@ -32,6 +32,7 @@
     "circular-json": "^0.3.3",
     "classnames": "^2.2.6",
     "connect": "^3.6.5",
+    "copy-webpack-plugin": "^4.6.0",
     "fb": "^2.0.0",
     "fb-react-sdk": "^1.0.4",
     "fs": "0.0.1-security",
