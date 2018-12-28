@@ -125,7 +125,7 @@ class DB {
 		let updatedAccount = null;
 		return new Promise((resolve, reject) => {
 			this.GetAccountById(id)
-				.then(updateableAccount => {					
+				.then(updateableAccount => {
 					for (let key in accountUpdateData) {
 						if (
 							!accountUpdateData.hasOwnProperty(key) ||
@@ -234,34 +234,51 @@ class DB {
 				return;
 			}
 			let ref = this.Con.ref('dancers');
-			const keys = [
-				`${division}-${role}`,
-				`${division}-${role}-q`
-			], queries = [];
-			if(qualifies && DancerDef.IsPreviousDivisionAvailable(division)){
-				keys.push(`${DancerDef.SanitizeDivision(DancerDef.GetPreviousDivision(division))}-${role}-q`);
+			const keys = [`${division}-${role}`, `${division}-${role}-q`],
+				queries = [];
+			if (qualifies && DancerDef.IsPreviousDivisionAvailable(division)) {
+				keys.push(
+					`${DancerDef.SanitizeDivision(
+						DancerDef.GetPreviousDivision(division)
+					)}-${role}-q`
+				);
 			}
-			keys.forEach((key) => {
-				queries.push(ref.orderByChild('DivisionRoleQualifies').equalTo(key).once('value'));
+			keys.forEach(key => {
+				queries.push(
+					ref
+						.orderByChild('DivisionRoleQualifies')
+						.equalTo(key)
+						.once('value')
+				);
 			});
 			Promise.all(queries)
 				.then(snapshots => {
 					let compMap = snapshots.reduce((acc, snapshot) => {
-							if(!snapshot.val()){
+							if (!snapshot.val()) {
 								return acc;
 							}
 							return acc.concat(Object.values(snapshot.val()));
 						}, []),
 						dancersArray = [];
 					for (let key in compMap) {
-						dancersArray.push(new DancerDef(compMap[key]));
+						const newDancer = new DancerDef(compMap[key]);
+						if (newDancer.Relevance <= 2) {
+							dancersArray.push(newDancer);
+						}
 					}
+					dancersArray.sort((a, b) => {
+						const la = a.LastName.toLowerCase(),
+							lb = b.LastName.toLowerCase();
+						if (la < lb) return -1;
+						else if (la > lb) return 1;
+						return 0;
+					});
 					resolve(dancersArray);
 				})
 				.catch(error => {
 					console.log('Error: ', error);
 					reject(error);
-				});	
+				});
 		});
 	}
 }

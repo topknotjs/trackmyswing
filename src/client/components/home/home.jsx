@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React, { Component, PropTypes } from 'react';
 import API from './../../libs/api.jsx';
-import Dancer from '../../classes/Dancers.jsx';
+import DancerList from '../dancerList/dancerList.jsx';
 import FacebookApi from '../../classes/FacebookApi.jsx';
 import className from 'classnames';
 
@@ -21,6 +20,12 @@ const ROLES = [
 ];
 
 const ApiService = new API();
+
+const getLoader = () => (
+	<div className="loading-container">
+		<img className="loading" src="/images/fidget-spinner.gif" />
+	</div>
+);
 export class Home extends Component {
 	constructor(props) {
 		super(props);
@@ -149,25 +154,9 @@ export class Home extends Component {
 						Submit
 					</button>
 					{this.state.searchPending ? (
-						<div className="loading-container">
-							<img
-								className="loading"
-								src="/images/fidget-spinner.gif"
-							/>
-						</div>
+						getLoader()
 					) : (
-						<ul className="dancer-list">
-							{this.state.dancers.map((dancer, index) => {
-								return (
-									<li
-										className="dancer-list-item"
-										key={index}
-									>
-										{dancer.FirstName} {dancer.LastName}
-									</li>
-								);
-							})}
-						</ul>
+						<DancerList dancers={this.state.dancers} />
 					)}
 				</section>
 			</main>

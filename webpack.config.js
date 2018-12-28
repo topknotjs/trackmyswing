@@ -19,7 +19,19 @@ module.exports = {
 			{
 				test: /\.jsx|js?/,
 				exclude: /node_modules/,
-				loader: 'babel-loader',
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: [
+							'@babel/preset-env',
+							'@babel/preset-react',
+						],
+						plugins: [
+							'@babel/plugin-proposal-object-rest-spread',
+							'@babel/plugin-proposal-class-properties',
+						],
+					},
+				},
 			},
 			{
 				test: /\.html$/,

@@ -1,6 +1,4 @@
 const express = require('express');
-// const path = require('path');
-// const dancers = require('./handlers/dancers');
 const fDB = require('../handlers/fireDB');
 const LoggerService = require('../handlers/logger');
 
@@ -15,7 +13,11 @@ router.get('/:division/:role', function(req, res) {
 	fireDB
 		.GetDancersByDivisionRoleQualifies(division, role, qualifies === 'true')
 		.then(dancers => {
-            logger.log(`Found ${dancers.length} dancers in division: ${division}, role: ${role}`);
+			logger.log(
+				`Found ${
+					dancers.length
+				} dancers in division: ${division}, role: ${role}`
+			);
 			res.send(dancers);
 		})
 		.catch(error => {
