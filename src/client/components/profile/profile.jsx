@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import API from './../../libs/api.jsx';
+import API from '../../libs/api.jsx';
 import FacebookLogin from 'react-facebook-login';
-import Dancer from '../../classes/Dancers.jsx';
 import FacebookApi from '../../classes/FacebookApi.jsx';
 import configs from '../../config/config';
+
+require('./profile.scss');
 
 const DIVISIONS = [
 	{ Key: 'champion', Label: 'Champions' },
@@ -29,7 +29,7 @@ const DefaultAccountData = {
 };
 
 const ApiService = new API();
-export class Account extends Component {
+export class Profile extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -39,7 +39,7 @@ export class Account extends Component {
 		// Login status received
 		FacebookApi.GetLoginStatus()
 			.then(result => {
-				console.log("Status result: ", result);
+				console.log('Status result: ', result);
 			})
 			.catch(error => {
 				console.log(error);
@@ -48,7 +48,7 @@ export class Account extends Component {
 	createAccount() {
 		ApiService.CreateAccount(this.state.form)
 			.then(result => {
-				console.log("Created: ", result);
+				console.log('Created: ', result);
 			})
 			.catch(error => {
 				console.log('Api error: ', error);
@@ -60,8 +60,8 @@ export class Account extends Component {
 		this.setState({
 			form: Object.assign({}, form, { userName: $event.target.value }),
 		});
-    }
-    onEmailUpdate($event) {
+	}
+	onEmailUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
 		this.setState({
@@ -74,18 +74,20 @@ export class Account extends Component {
 		this.setState({
 			form: Object.assign({}, form, { firstName: $event.target.value }),
 		});
-    }
-    onLastnameUpdate($event) {
+	}
+	onLastnameUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
 		this.setState({
 			form: Object.assign({}, form, { lastName: $event.target.value }),
 		});
-    }
-    onWSDCUpdate($event) {
+	}
+	onWSDCUpdate($event) {
 		$event.preventDefault();
 		this.setState({
-			form: Object.assign({}, this.state.form, { wsdcid: $event.target.value }),
+			form: Object.assign({}, this.state.form, {
+				wsdcid: $event.target.value,
+			}),
 		});
 	}
 	onCreateClicked() {
@@ -105,7 +107,7 @@ export class Account extends Component {
 				userName: `${data.first_name} ${data.last_name}`,
 				location: data.location.name,
 				facebookId: data.id,
-				profileImageUrl: data.picture.data.url
+				profileImageUrl: data.picture.data.url,
 			}),
 		});
 		this.createAccount();
@@ -119,8 +121,8 @@ export class Account extends Component {
 	render() {
 		return (
 			<main>
-				<header>
-					<h1>Create Account</h1>
+				<header className="header">
+					<h1>Profile</h1>
 				</header>
 				<section className="content-area">
 					<FacebookLogin
@@ -128,8 +130,9 @@ export class Account extends Component {
 						autoLoad={true}
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
-						callback={(e) => this.responseFacebook(e)}
-						/>
+						cssClass="facebook-login"
+						callback={e => this.responseFacebook(e)}
+					/>
 					<div className="form-container">
 						<label htmlFor="username">Username: </label>
 						<input
@@ -139,11 +142,11 @@ export class Account extends Component {
 							onChange={e => this.onUsernameUpdate(e)}
 						/>
 					</div>
-                    <div className="form-container">
+					<div className="form-container">
 						<label htmlFor="email">Email: </label>
 						<input
 							name="email"
-                            id="email"
+							id="email"
 							type="email"
 							value={this.state.form.email}
 							onChange={e => this.onEmailUpdate(e)}
@@ -176,7 +179,9 @@ export class Account extends Component {
 							onChange={e => this.onWSDCUpdate(e)}
 						/>
 					</div>
-					<button onClick={e => this.onCreateClicked(e)}>Create</button>
+					<button onClick={e => this.onCreateClicked(e)}>
+						Create
+					</button>
 				</section>
 			</main>
 		);
