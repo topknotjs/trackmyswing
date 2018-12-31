@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Home } from './components/home/home.jsx';
-import { Profile } from './components/profile/profile.jsx';
+import { Login } from './components/login/login.jsx';
+import { Create } from './components/create/create.jsx';
+import { Profile } from './components/profile/Profile.jsx';
 
 require('./views/index.html');
 
@@ -14,6 +16,8 @@ class App extends Component {
 		return (
 			<Router>
 				<Switch>
+					<Route path="/login" component={Login} />
+					<Route path="/create" component={Create} />
 					<Route path="/profile" component={Profile} />
 					<Route path="/" component={Home} />
 				</Switch>

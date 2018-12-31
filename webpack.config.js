@@ -5,8 +5,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 var BUILD_DIR = path.resolve(__dirname, 'public');
 module.exports = {
 	entry: {
-		home: './src/client/components/home/home.jsx',
-		account: './src/client/components/account/account.jsx',
 		index: './src/client/index.jsx',
 	},
 	output: {
@@ -22,10 +20,7 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: [
-							'@babel/preset-env',
-							'@babel/preset-react',
-						],
+						presets: ['@babel/preset-env', '@babel/preset-react'],
 						plugins: [
 							'@babel/plugin-proposal-object-rest-spread',
 							'@babel/plugin-proposal-class-properties',

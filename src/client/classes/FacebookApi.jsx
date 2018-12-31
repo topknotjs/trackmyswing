@@ -1,5 +1,5 @@
 import configs from '../config/config';
-class FacebookApi {
+export default class FacebookApi {
 	init() {
 		return new Promise((resolve, reject) => {
 			if (typeof FB !== 'undefined') {
@@ -95,7 +95,7 @@ class FacebookApi {
 	static GetLoginStatus() {
 		let api = new FacebookApi();
 		return new Promise((resolve, reject) => {
-			console.log("Initing: ");
+			console.log('Initing: ');
 			api.init()
 				.then(result => {
 					return api.checkLoginState();
@@ -109,5 +109,3 @@ class FacebookApi {
 		});
 	}
 }
-
-export default FacebookApi;

@@ -4,7 +4,7 @@ import FacebookLogin from 'react-facebook-login';
 import FacebookApi from '../../classes/FacebookApi.jsx';
 import configs from '../../config/config';
 
-require('./profile.scss');
+require('./login.scss');
 
 const DIVISIONS = [
 	{ Key: 'champion', Label: 'Champions' },
@@ -29,7 +29,7 @@ const DefaultAccountData = {
 };
 
 const ApiService = new API();
-export class Profile extends Component {
+export class Login extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
