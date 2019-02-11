@@ -1,3 +1,43 @@
 @import '../../shared/assets/styles/variables';
 @import '../../shared/assets/styles/reset';
 @import '../../shared/assets/styles/global';
+
+.header {
+	width: 100%;
+	text-align: center;
+}
+
+.content-area {
+	min-width: 50rem;
+	width: 30vw;
+	margin: 0 auto;
+}
+
+.login-container {
+	border-bottom: $border;
+	margin-bottom: 1rem;
+
+	&-row {
+		width: 100%;
+
+		.login-label,
+		.login-value {
+			display: block;
+			margin: 0.5rem 0;
+			text-align: left;
+		}
+  }
+  
+  &-action {
+    margin: .5rem 0;
+  }
+}
+
+.facebook-login {
+	background: url('https://scontent-sea1-1.xx.fbcdn.net/v/t39.2365-6/17639236_1785253958471956_282550797298827264_n.png?_nc_cat=105&_nc_ht=scontent-sea1-1.xx&oh=4074a7d971746bd7ca9ca2720e30302e&oe=5C8C28EA');
+	background-size: 100% 100%;
+	width: 24rem;
+	height: 4rem;
+	display: block;
+	border: none;
+}

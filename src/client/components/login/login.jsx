@@ -55,8 +55,9 @@ export class Login extends Component {
 				console.log(error);
 			});
 	}
-	createAccount() {
-		ApiService.CreateAccount(this.state.form)
+
+	login() {
+		ApiService.Login(this.state.form)
 			.then(result => {
 				console.log('Created: ', result);
 			})
@@ -64,13 +65,7 @@ export class Login extends Component {
 				console.log('Api error: ', error);
 			});
 	}
-	onUsernameUpdate($event) {
-		$event.preventDefault();
-		let form = this.state.form;
-		this.setState({
-			form: Object.assign({}, form, { userName: $event.target.value }),
-		});
-	}
+
 	onEmailUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
@@ -78,30 +73,17 @@ export class Login extends Component {
 			form: Object.assign({}, form, { email: $event.target.value }),
 		});
 	}
-	onFirstnameUpdate($event) {
+
+	onPasswordUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
 		this.setState({
-			form: Object.assign({}, form, { firstName: $event.target.value }),
+			form: Object.assign({}, form, { password: $event.target.value }),
 		});
 	}
-	onLastnameUpdate($event) {
-		$event.preventDefault();
-		let form = this.state.form;
-		this.setState({
-			form: Object.assign({}, form, { lastName: $event.target.value }),
-		});
-	}
-	onWSDCUpdate($event) {
-		$event.preventDefault();
-		this.setState({
-			form: Object.assign({}, this.state.form, {
-				wsdcid: $event.target.value,
-			}),
-		});
-	}
-	onCreateClicked() {
-		this.createAccount();
+
+	onLoginClicked() {
+		this.login();
 	}
 	/**
 	 * Handle facebook stuffs
@@ -135,63 +117,43 @@ export class Login extends Component {
 					<h1>Login</h1>
 				</header>
 				<section className="content-area">
+					<div className="login-container">
+						<div className="login-container-row">
+							<label className="login-label" htmlFor="email">Email: </label>
+							<input
+								className="login-value"
+								name="email"
+								id="email"
+								type="email"
+								value={this.state.form.email}
+								onChange={e => this.onEmailUpdate(e)}
+							/>
+						</div>
+						<div className="login-container-row">
+							<label className="login-label" htmlFor="password">Password: </label>
+							<input
+								className="login-value"
+								name="password"
+								id="password"
+								type="password"
+								value={this.state.form.password}
+								onChange={e => this.onPasswordUpdate(e)}
+							/>
+						</div>
+						<button className="login-container-action" onClick={e => this.onCreateClicked(e)}>
+							Login
+						</button>
+					</div>
 					<FacebookLogin
 						appId={configs.FACEBOOK_APP_ID}
 						autoLoad={true}
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
 						cssClass="facebook-login"
+						textButton=""
+						size="medium"
 						callback={e => this.responseFacebook(e)}
 					/>
-					<div className="form-container">
-						<label htmlFor="username">Username: </label>
-						<input
-							name="username"
-							id="username"
-							value={this.state.form.userName}
-							onChange={e => this.onUsernameUpdate(e)}
-						/>
-					</div>
-					<div className="form-container">
-						<label htmlFor="email">Email: </label>
-						<input
-							name="email"
-							id="email"
-							type="email"
-							value={this.state.form.email}
-							onChange={e => this.onEmailUpdate(e)}
-						/>
-					</div>
-					<div className="form-container">
-						<label htmlFor="firstname">First Name: </label>
-						<input
-							name="firstname"
-							id="firstname"
-							value={this.state.form.firstName}
-							onChange={e => this.onFirstnameUpdate(e)}
-						/>
-					</div>
-					<div className="form-container">
-						<label htmlFor="lastname">Last Name: </label>
-						<input
-							name="lastname"
-							id="lastname"
-							value={this.state.form.lastName}
-							onChange={e => this.onLastnameUpdate(e)}
-						/>
-					</div>
-					<div className="form-container">
-						<label htmlFor="wsdcid">WSDC Number: </label>
-						<input
-							name="wsdcid"
-							id="wsdcid"
-							value={this.state.form.wsdcid}
-							onChange={e => this.onWSDCUpdate(e)}
-						/>
-					</div>
-					<button onClick={e => this.onCreateClicked(e)}>
-						Create
-					</button>
 				</section>
 			</main>
 		);

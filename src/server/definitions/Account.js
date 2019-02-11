@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 // TODO: Add error logging
 // TODO: Change wscid to wsdcid
 class Account{
@@ -10,6 +12,7 @@ class Account{
         this.Wscid = null;
         this.FacebookId = null;
         this.Location = "";
+        this.Password = "";
         this._error = false;
 
         if(!data) return;
@@ -27,7 +30,7 @@ class Account{
             ProfileImageUrl: this.ProfileImageUrl,
             Wscid: this.Wscid,
             FacebookId: this.FacebookId,
-            Location: this.Location
+            Location: this.Location,            
         };
     } 
     setError(msg){
@@ -43,6 +46,10 @@ class Account{
         this.Wscid = (data.hasOwnProperty('wsdcid')) ? data.wsdcid : "";
         this.FacebookId = (data.hasOwnProperty('facebookId')) ? data.facebookId : "";
         this.Location = (data.hasOwnProperty('location')) ? data.location : "";
+        const password = (data.hasOwnProperty('password')) ? data.password : "";
+        bcrypt.hash(password, 10, (err, hash) => {
+            this.Password = hash;
+        })
         if(this.Email === ""){
             this.setError("No email on account.");
         }

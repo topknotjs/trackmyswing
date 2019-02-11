@@ -22,6 +22,7 @@ const ROLES = [
 const DefaultAccountData = {
 	userName: '',
 	email: '',
+	password: '',
 	firstName: '',
 	lastName: '',
 	wsdcid: '',
@@ -55,7 +56,9 @@ export class Create extends Component {
 				console.log(error);
 			});
 	}
+
 	createAccount() {
+		console.log("Form: ", this.state.form);
 		ApiService.CreateAccount(this.state.form)
 			.then(result => {
 				console.log('Created: ', result);
@@ -64,6 +67,7 @@ export class Create extends Component {
 				console.log('Api error: ', error);
 			});
 	}
+
 	onUsernameUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
@@ -71,6 +75,7 @@ export class Create extends Component {
 			form: Object.assign({}, form, { userName: $event.target.value }),
 		});
 	}
+
 	onEmailUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
@@ -78,6 +83,15 @@ export class Create extends Component {
 			form: Object.assign({}, form, { email: $event.target.value }),
 		});
 	}
+
+	onPasswordUpdate($event) {
+		$event.preventDefault();
+		let form = this.state.form;
+		this.setState({
+			form: Object.assign({}, form, { password: $event.target.value }),
+		});
+	}
+
 	onFirstnameUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
@@ -85,6 +99,7 @@ export class Create extends Component {
 			form: Object.assign({}, form, { firstName: $event.target.value }),
 		});
 	}
+
 	onLastnameUpdate($event) {
 		$event.preventDefault();
 		let form = this.state.form;
@@ -92,6 +107,7 @@ export class Create extends Component {
 			form: Object.assign({}, form, { lastName: $event.target.value }),
 		});
 	}
+
 	onWSDCUpdate($event) {
 		$event.preventDefault();
 		this.setState({
@@ -100,9 +116,11 @@ export class Create extends Component {
 			}),
 		});
 	}
+
 	onCreateClicked() {
 		this.createAccount();
 	}
+
 	/**
 	 * Handle facebook stuffs
 	 * @param {} data
@@ -112,6 +130,7 @@ export class Create extends Component {
 		this.setState({
 			form: Object.assign({}, this.state.form, {
 				email: data.email,
+				password: data.password,
 				firstName: data.first_name,
 				lastName: data.last_name,
 				userName: `${data.first_name} ${data.last_name}`,
@@ -123,16 +142,18 @@ export class Create extends Component {
 		this.createAccount();
 		console.log(data);
 	}
+
 	componentDidMount() {
 		// FacebookApi.FetchUser().then(result => {
 		// 	console.log('User in component: ', result);
 		// });
 	}
+
 	render() {
 		return (
 			<main>
 				<header className="header">
-					<h1>Login</h1>
+					<h1>Create</h1>
 				</header>
 				<section className="content-area">
 					<FacebookLogin
@@ -141,6 +162,7 @@ export class Create extends Component {
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
 						cssClass="facebook-login"
+						textButton=""
 						callback={e => this.responseFacebook(e)}
 					/>
 					<div className="form-container">
@@ -160,6 +182,16 @@ export class Create extends Component {
 							type="email"
 							value={this.state.form.email}
 							onChange={e => this.onEmailUpdate(e)}
+						/>
+					</div>
+					<div className="form-container">
+						<label htmlFor="password">Password: </label>
+						<input
+							name="password"
+							id="password"
+							type="password"
+							value={this.state.form.password}
+							onChange={e => this.onPasswordUpdate(e)}
 						/>
 					</div>
 					<div className="form-container">

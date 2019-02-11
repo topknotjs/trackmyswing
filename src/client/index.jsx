@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route,
+	Redirect,
+} from 'react-router-dom';
 import { Home } from './components/home/home.jsx';
 import { Login } from './components/login/login.jsx';
 import { Create } from './components/create/create.jsx';
@@ -19,7 +24,8 @@ class App extends Component {
 					<Route path="/login" component={Login} />
 					<Route path="/create" component={Create} />
 					<Route path="/profile" component={Profile} />
-					<Route path="/" component={Home} />
+					<Route path="/home" component={Home} />
+					<Route path="/" render={() => <Redirect to="/login" />} />
 				</Switch>
 			</Router>
 		);
