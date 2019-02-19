@@ -20,12 +20,8 @@ const ROLES = [
 ];
 
 const DefaultAccountData = {
-	userName: '',
 	email: '',
-	firstName: '',
-	lastName: '',
-	wsdcid: '',
-	profileImageUrl: '',
+	password: '',
 };
 
 const ApiService = new API();
@@ -59,7 +55,7 @@ export class Login extends Component {
 	login() {
 		ApiService.Login(this.state.form)
 			.then(result => {
-				console.log('Created: ', result);
+				console.log('Login: ', result);
 			})
 			.catch(error => {
 				console.log('Api error: ', error);
@@ -140,7 +136,7 @@ export class Login extends Component {
 								onChange={e => this.onPasswordUpdate(e)}
 							/>
 						</div>
-						<button className="login-container-action" onClick={e => this.onCreateClicked(e)}>
+						<button className="login-container-action" onClick={e => this.onLoginClicked(e)}>
 							Login
 						</button>
 					</div>
