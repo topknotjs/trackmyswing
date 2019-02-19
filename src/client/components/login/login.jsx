@@ -55,7 +55,8 @@ export class Login extends Component {
 	login() {
 		ApiService.Login(this.state.form)
 			.then(result => {
-				console.log('Login: ', result);
+				console.log('Login: ', '/profile/' + result);
+				this.props.history.push('/profile/' + result);
 			})
 			.catch(error => {
 				console.log('Api error: ', error);
@@ -115,7 +116,9 @@ export class Login extends Component {
 				<section className="content-area">
 					<div className="login-container">
 						<div className="login-container-row">
-							<label className="login-label" htmlFor="email">Email: </label>
+							<label className="login-label" htmlFor="email">
+								Email:{' '}
+							</label>
 							<input
 								className="login-value"
 								name="email"
@@ -126,7 +129,9 @@ export class Login extends Component {
 							/>
 						</div>
 						<div className="login-container-row">
-							<label className="login-label" htmlFor="password">Password: </label>
+							<label className="login-label" htmlFor="password">
+								Password:{' '}
+							</label>
 							<input
 								className="login-value"
 								name="password"
@@ -136,7 +141,10 @@ export class Login extends Component {
 								onChange={e => this.onPasswordUpdate(e)}
 							/>
 						</div>
-						<button className="login-container-action" onClick={e => this.onLoginClicked(e)}>
+						<button
+							className="login-container-action"
+							onClick={e => this.onLoginClicked(e)}
+						>
 							Login
 						</button>
 					</div>
