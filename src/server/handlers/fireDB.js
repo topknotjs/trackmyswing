@@ -59,8 +59,8 @@ class DB {
 			});
 	}
 
-	WriteDancerToFirebase(wscid, dancer) {
-		this.Con.ref('dancers/' + wscid).set(dancer);
+	WriteDancerToFirebase(wsdcid, dancer) {
+		this.Con.ref('dancers/' + wsdcid).set(dancer);
 	}
 	WriteEventsToFirebase(events) {
 		return new Promise((resolve, reject) => {
@@ -125,9 +125,21 @@ class DB {
 	}
 	WriteAccountToFirebase(account) {
 		return new Promise((resolve, reject) => {
-			this.Con.ref('accounts').push(account.toJSON(true), () =>
-				resolve()
-			);
+			const ref = this.Con.ref('accounts').push();
+			console.log(`Writing account to refid: ${ref.key}`);
+			ref.then(() => {
+				ref.set({
+					...account.toJSON(true),
+				});
+				resolve(ref.key);
+			}).catch(error => {
+				console.log('Found write account error: ', error);
+				reject(error);
+			});
+			// this.Con.ref('accounts').push(account.toJSON(true), value => {
+			// 	console.log('Wrote account: ', value);
+			// 	resolve();
+			// });
 		});
 	}
 	// TODO: Error handle when id does not exist
@@ -196,7 +208,12 @@ class DB {
 			this.Con.ref(`accounts/${id}`)
 				.once('value')
 				.then(snapshot => {
-					resolve(snapshot.val());
+					resolve(
+						new AccountDef({
+							...snapshot.val(),
+							accountId: id,
+						})
+					);
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);
@@ -207,7 +224,7 @@ class DB {
 	async GetAccountByEmail(email) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts`)
-				.orderByChild('Email')
+				.orderByChild('email')
 				.equalTo(DancerDef.SanitizeEmail(email))
 				.once('value')
 				.then(snapshot => {

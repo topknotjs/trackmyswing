@@ -11,17 +11,18 @@ let fireDB = fDB();
 let logger = new LoggerService();
 
 const router = express.Router();
-router.get('/:wscid', function(req, res) {
+router.get('/:wsdcid', function(req, res) {
+	// TODO: Go to firebase first before going here
 	wsdcAPI
-		.GetDancer(req.params.wscid)
+		.GetDancer(req.params.wsdcid)
 		.then(result => {
-			logger.info(`Found dancer ${req.params.wscid}`);
+			logger.info(`Found dancer ${req.params.wsdcid}`);
 			let newDancer = new dancerDef();
 			newDancer.LoadWSDC(result);
-			res.send({ constructed: newDancer });
+			res.send({ constructed: newDancer.toJSON() });
 		})
 		.catch(error => {
-			logger.error(`Get dancer ${req.params.wscid} error: ${error}`);
+			logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
 			res.send({ error });
 		});
 });

@@ -36,7 +36,7 @@ export class Login extends Component {
 		// Change this page to be the /login page
 		// Check to see if user is logged into wcsconnect, if so, redirect to profile page
 		// If user is not logged in, have them log in with their username or with facebook.
-		// If user logs in with facebook, have them redirect to wcsconnect where we gather their wscid number, then send them to the profile page
+		// If user logs in with facebook, have them redirect to wcsconnect where we gather their wsdcid number, then send them to the profile page
 
 		// Login status received
 		FacebookApi.GetLoginStatus()

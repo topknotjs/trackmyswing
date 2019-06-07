@@ -1,15 +1,16 @@
 const bcrypt = require('bcrypt');
 
 // TODO: Add error logging
-// TODO: Change wscid to wsdcid
+// TODO: Change wsdcid to wsdcid
 class Account {
 	constructor(data) {
+		this.AccountId = '';
 		this.Username = '';
 		this.Email = '';
 		this.FirstName = '';
 		this.LastName = '';
 		this.ProfileImageUrl = '';
-		this.Wscid = null;
+		this.Wsdcid = null;
 		this.FacebookId = null;
 		this.Location = '';
 		this.Password = '';
@@ -23,27 +24,29 @@ class Account {
 	}
 	toJSON(full = false) {
 		const base = {
-			Username: this.Username,
-			Email: this.Email,
-			FirstName: this.FirstName,
-			LastName: this.LastName,
-			ProfileImageUrl: this.ProfileImageUrl,
-			Wscid: this.Wscid,
-			FacebookId: this.FacebookId,
-			Location: this.Location,
+			accountId: this.AccountId,
+			username: this.Username,
+			email: this.Email,
+			firstName: this.FirstName,
+			lastName: this.LastName,
+			profileImageUrl: this.ProfileImageUrl,
+			wsdcid: this.Wsdcid,
+			facebookId: this.FacebookId,
+			location: this.Location,
 		};
 		return full
 			? {
 					...base,
-					Password: this.Password,
+					password: this.Password,
 			  }
-			: full;
+			: base;
 	}
 	setError(msg) {
 		console.log('Account error message: ', msg);
 		this._error = msg;
 	}
 	ProcessAccount(data) {
+		this.AccountId = data.hasOwnProperty('accountId') ? data.accountId : '';
 		this.Username = data.hasOwnProperty('userName') ? data.userName : '';
 		this.Email = data.hasOwnProperty('email') ? data.email : '';
 		this.FirstName = data.hasOwnProperty('firstName') ? data.firstName : '';
@@ -51,7 +54,7 @@ class Account {
 		this.ProfileImageUrl = data.hasOwnProperty('profileImageUrl')
 			? data.profileImageUrl
 			: '';
-		this.Wscid = data.hasOwnProperty('wsdcid') ? data.wsdcid : '';
+		this.Wsdcid = data.hasOwnProperty('wsdcid') ? data.wsdcid : '';
 		this.FacebookId = data.hasOwnProperty('facebookId')
 			? data.facebookId
 			: '';
@@ -75,8 +78,10 @@ class Account {
 				!this.hasOwnProperty(key) ||
 				!data.hasOwnProperty(key) ||
 				!data[key]
-			)
+			) {
 				continue;
+			}
+
 			this[key] = data[key];
 		}
 	}
@@ -87,8 +92,10 @@ class Account {
 				!newAccount.hasOwnProperty(key) ||
 				!data.hasOwnProperty(key) ||
 				!data[key]
-			)
+			) {
 				continue;
+			}
+
 			newAccount[key] = data[key];
 		}
 		return newAccount;

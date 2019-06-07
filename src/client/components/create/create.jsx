@@ -18,30 +18,29 @@ const ROLES = [
 	{ Key: 'leader', Label: 'Leader' },
 	{ Key: 'follower', Label: 'Follower' },
 ];
-
-const DefaultAccountData = {
-	userName: '',
-	email: '',
-	password: '',
-	firstName: '',
-	lastName: '',
-	wsdcid: '',
-	profileImageUrl: '',
-};
-
 const ApiService = new API();
 export class Create extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			form: Object.assign({}, DefaultAccountData),
+			form: {
+				userName: '',
+				email: '',
+				password: '',
+				firstName: '',
+				lastName: '',
+				wsdcid: '',
+				profileImageUrl: '',
+			},
 			loggedIn: false,
 		};
+	}
 
+	componentDidMount() {
 		// Change this page to be the /login page
 		// Check to see if user is logged into wcsconnect, if so, redirect to profile page
 		// If user is not logged in, have them log in with their username or with facebook.
-		// If user logs in with facebook, have them redirect to wcsconnect where we gather their wscid number, then send them to the profile page
+		// If user logs in with facebook, have them redirect to wcsconnect where we gather their wsdcid number, then send them to the profile page
 
 		// Login status received
 		FacebookApi.GetLoginStatus()
@@ -58,10 +57,10 @@ export class Create extends Component {
 	}
 
 	createAccount() {
-		console.log("Form: ", this.state.form);
 		ApiService.CreateAccount(this.state.form)
 			.then(result => {
-				console.log('Created: ', result);
+				// TODO validate this result by creating an object!
+				this.props.history.push(`/profile/${result.accountId}`);
 			})
 			.catch(error => {
 				console.log('Api error: ', error);
@@ -126,21 +125,26 @@ export class Create extends Component {
 	 * @param {} data
 	 */
 	responseFacebook(data) {
-		// TODO: Sanitize the crap out of this!!
+		// TODO: Sanitize this and surround it with a wrapper
+		const location = data.hasOwnProperty('location')
+			? data.location.name
+			: '';
+		const profileImageUrl = data.hasOwnProperty('picture')
+			? data.picture.data.url
+			: '';
+		const profileEmail = data.hasOwnProperty('email') ? data.email : '';
 		this.setState({
 			form: Object.assign({}, this.state.form, {
-				email: data.email,
-				password: data.password,
+				email: profileEmail,
 				firstName: data.first_name,
 				lastName: data.last_name,
-				userName: `${data.first_name} ${data.last_name}`,
-				location: data.location.name,
+				location: location,
 				facebookId: data.id,
-				profileImageUrl: data.picture.data.url,
+				profileImageUrl: profileImageUrl,
 			}),
 		});
-		this.createAccount();
-		console.log(data);
+		// TODO: Figure out how to handle create account here on facebook response
+		// this.createAccount();
 	}
 
 	componentDidMount() {
@@ -162,7 +166,7 @@ export class Create extends Component {
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
 						cssClass="facebook-login"
-						textButton=""
+						textButton="Login with Facebook"
 						callback={e => this.responseFacebook(e)}
 					/>
 					<div className="form-container">

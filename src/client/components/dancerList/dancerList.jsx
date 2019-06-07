@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class DancerList extends Component {
 	static propTypes = {
@@ -16,7 +17,7 @@ export default class DancerList extends Component {
 				{this.state.dancers.map((dancer, index) => {
 					return (
 						<li className="dancer-list-item" key={index}>
-							{dancer.FirstName} {dancer.LastName}
+							{dancer.firstName} {dancer.lastName}
 						</li>
 					);
 				})}

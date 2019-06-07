@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
 			res.send(results);
 		})
 		.catch(error => {
-			logger.error(`Get dancer ${req.params.wscid} error: ${error}`);
+			logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
 			res.send({ error });
 		});
 });
@@ -33,7 +33,7 @@ router.get('/:id', function(req, res) {
 			res.send(results);
 		})
 		.catch(error => {
-			logger.error(`Get dancer ${req.params.wscid} error: ${error}`);
+			logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
 			res.send({ error });
 		});
 });
