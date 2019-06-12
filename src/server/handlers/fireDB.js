@@ -2,15 +2,15 @@ let dbConfig = require('./dbConfig');
 let firebase = require('firebase');
 let DancerDef = require('../definitions/Dancer');
 let AccountDef = require('../definitions/Account');
+let sanitizeEmail = require('../utils/sanitizeEmail');
+
 const getSingleValueFromSnapshot = snapshot => {
-	const sh = snapshot.val();
-	for (let key in sh) {
-		return sh[key];
+	for (let key in snapshot) {
+		return snapshot[key];
 	}
 };
 const getSingleKeyFromSnapshot = snapshot => {
-	const sh = snapshot.val();
-	for (let key in sh) {
+	for (let key in snapshot) {
 		return key;
 	}
 };
@@ -130,6 +130,7 @@ class DB {
 			ref.then(() => {
 				ref.set({
 					...account.toJSON(true),
+					accountId: ref.key,
 				});
 				resolve(ref.key);
 			}).catch(error => {
@@ -208,9 +209,14 @@ class DB {
 			this.Con.ref(`accounts/${id}`)
 				.once('value')
 				.then(snapshot => {
+					const accountData = snapshot.val();
+					if (!accountData) {
+						reject(`Account ${id} not found`);
+						return;
+					}
 					resolve(
 						new AccountDef({
-							...snapshot.val(),
+							...accountData,
 							accountId: id,
 						})
 					);
@@ -225,10 +231,15 @@ class DB {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts`)
 				.orderByChild('email')
-				.equalTo(DancerDef.SanitizeEmail(email))
+				.equalTo(sanitizeEmail(email))
 				.once('value')
 				.then(snapshot => {
-					resolve(snapshot.val());
+					const accountRaw = snapshot.val();
+					const account = new AccountDef(
+						getSingleValueFromSnapshot(accountRaw)
+					);
+					// TODO: Check for errors from account def here
+					resolve(account.toJSON());
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);
@@ -315,16 +326,17 @@ class DB {
 	Login(email, password) {
 		return new Promise((resolve, reject) => {
 			let ref = this.Con.ref('accounts');
-			ref.orderByChild('Email')
-				.equalTo(email)
+			ref.orderByChild('email')
+				.equalTo(sanitizeEmail(email))
 				.once('value')
 				.then(snapshot => {
-					const account = getSingleValueFromSnapshot(snapshot);
-					const key = getSingleKeyFromSnapshot(snapshot);
+					const accountRaw = snapshot.val();
+					const key = getSingleKeyFromSnapshot(accountRaw);
+					const account = getSingleValueFromSnapshot(accountRaw);
 					if (
 						AccountDef.CheckPasswordAgainstHashed(
 							password,
-							account.Password
+							account.password
 						)
 					) {
 						resolve(key);

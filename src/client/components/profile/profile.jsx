@@ -64,12 +64,18 @@ export class Profile extends Component {
 	loadProfile() {
 		const profileId = getPageFromUrl(this.props.location);
 		this.setState({ loading: true });
-		ApiService.GetProfile(profileId).then(profile => {
-			this.setState({
-				profile,
-				loading: false,
+		ApiService.GetAccountById(profileId)
+			.then(profile => {
+				this.setState({
+					profile,
+					loading: false,
+				});
+			})
+			.catch(error => {
+				this.props.history.push('/login');
 			});
-		});
+		// Figure out what to do with this data and how to use it.
+		// FacebookApi.FetchUser();
 	}
 	render() {
 		const RenderLoading = ({ loading }) =>

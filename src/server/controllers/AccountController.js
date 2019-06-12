@@ -25,7 +25,7 @@ router.post('/attend/:event_id/:account_id', function(req, res) {
 router.post('/login', function(req, res) {
 	let { email, password } = req.body;
 	if (!email || !password) {
-		res.status(400).send('Missing email or password');
+		res.status(404).send('Missing email or password');
 		return;
 	}
 	fireDB
@@ -34,7 +34,7 @@ router.post('/login', function(req, res) {
 			res.send(result);
 		})
 		.catch(error => {
-			res.status(400).send('Login error: ' + error);
+			res.status(404).send('Login error: ' + error);
 		});
 });
 
@@ -82,25 +82,26 @@ router.post('/:id', async function(req, res) {
 router.get('/:id', function(req, res) {
 	// TODO: this belongs in the account getter
 	let { id } = req.params;
-	if (id.indexOf('@') !== -1) {
-		fireDB
-			.GetAccountById(id)
-			.then(result => {
-				res.send(result);
-			})
-			.catch(error => {
-				res.status(400).send('Error: ' + error);
-			});
-	} else {
-		fireDB
-			.GetAccountById(id)
-			.then(result => {
-				res.send(result);
-			})
-			.catch(error => {
-				res.status(400).send('Error: ' + error);
-			});
-	}
+	fireDB
+		.GetAccountById(id)
+		.then(result => {
+			res.send(result);
+		})
+		.catch(error => {
+			res.status(404).send('Error: ' + error);
+		});
+});
+router.get('/', function(req, res) {
+	// TODO: this belongs in the account getter
+	let { email } = req.query;
+	fireDB
+		.GetAccountByEmail(email)
+		.then(result => {
+			res.send(result);
+		})
+		.catch(error => {
+			res.status(404).send('Error: ' + error);
+		});
 });
 router.get('/facebook/', async function(req, res) {
 	console.log('received content from facebook: ', req.body, req.params);

@@ -63,7 +63,7 @@ export default class FacebookApi {
 			});
 		});
 	}
-	fetch() {
+	fetchFriends() {
 		return new Promise((resolve, reject) => {
 			FB.api(
 				'/me/friends',
@@ -73,6 +73,17 @@ export default class FacebookApi {
 			);
 		});
 	}
+	fetch() {
+		return new Promise((resolve, reject) => {
+			FB.api(
+				'/me',
+				{ fields: 'first_name, last_name, gender, picture, email' },
+				response =>
+					response.error ? reject(response) : resolve(response)
+			);
+		});
+	}
+
 	static FetchUser() {
 		let api = new FacebookApi();
 		return new Promise((resolve, reject) => {

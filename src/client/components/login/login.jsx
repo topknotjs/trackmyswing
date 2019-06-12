@@ -32,30 +32,31 @@ export class Login extends Component {
 			form: Object.assign({}, DefaultAccountData),
 			loggedIn: false,
 		};
+		this.api = new API();
+	}
 
+	componentDidMount() {
 		// Change this page to be the /login page
 		// Check to see if user is logged into wcsconnect, if so, redirect to profile page
 		// If user is not logged in, have them log in with their username or with facebook.
 		// If user logs in with facebook, have them redirect to wcsconnect where we gather their wsdcid number, then send them to the profile page
-
 		// Login status received
-		FacebookApi.GetLoginStatus()
-			.then(result => {
-				console.log('Status result: ', result);
-				// Check to see if user is logged in with facebook
-				if (result.status === 'connected') {
-					this.setState({ loggedIn: true });
-				}
-			})
-			.catch(error => {
-				console.log(error);
-			});
+		// FacebookApi.GetLoginStatus()
+		// 	.then(result => {
+		// 		console.log('Status result: ', result);
+		// 		// Check to see if user is logged in with facebook
+		// 		if (result.status === 'connected') {
+		// 			this.setState({ loggedIn: true });
+		// 		}
+		// 	})
+		// 	.catch(error => {
+		// 		console.log(error);
+		// 	});
 	}
 
 	login() {
 		ApiService.Login(this.state.form)
 			.then(result => {
-				console.log('Login: ', '/profile/' + result);
 				this.props.history.push('/profile/' + result);
 			})
 			.catch(error => {
@@ -88,19 +89,20 @@ export class Login extends Component {
 	 */
 	responseFacebook(data) {
 		// TODO: Sanitize the crap out of this!!
-		this.setState({
-			form: Object.assign({}, this.state.form, {
-				email: data.email,
-				firstName: data.first_name,
-				lastName: data.last_name,
-				userName: `${data.first_name} ${data.last_name}`,
-				location: data.location.name,
-				facebookId: data.id,
-				profileImageUrl: data.picture.data.url,
-			}),
-		});
-		this.createAccount();
-		console.log(data);
+		// this.createAccount();
+		if (!data.email) {
+			console.log('Facebook data has no email: ', data);
+			return;
+		}
+		// Get user by email
+		this.api
+			.GetAccountByEmail(data.email)
+			.then(account => {
+				this.props.history.push(`/profile/${account.accountId}`);
+			})
+			.catch(error => {
+				console.log('Account error: ', error);
+			});
 	}
 	componentDidMount() {
 		// FacebookApi.FetchUser().then(result => {
@@ -154,7 +156,7 @@ export class Login extends Component {
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
 						cssClass="facebook-login"
-						textButton=""
+						textButton="Login with Facebook"
 						size="medium"
 						callback={e => this.responseFacebook(e)}
 					/>

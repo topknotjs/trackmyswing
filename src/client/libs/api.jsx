@@ -50,9 +50,20 @@ export default class API {
 				});
 		});
 	}
-	GetProfile(id) {
+	GetAccountById(id) {
 		return new Promise((resolve, reject) => {
 			this.call(`/api/account/${id}`, 'GET')
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
+	GetAccountByEmail(email) {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/account?email=${email}`, 'GET')
 				.then(result => {
 					resolve(result.data);
 				})

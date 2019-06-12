@@ -180,13 +180,6 @@ class Dancer {
 		}
 		return parseInt(sanitized);
 	}
-	//  TODO: Create an email format sanitizer
-	static SanitizeEmail(emailInput) {
-		if (typeof emailInput !== 'string') {
-			return null;
-		}
-		return emailInput;
-	}
 
 	static GetPreviousDivision(division) {
 		let divisionValues = Object.values(DIVISION_MAP);
