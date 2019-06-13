@@ -21,15 +21,34 @@ router.post('/attend/:event_id/:account_id', function(req, res) {
 			res.status(400).send('Error: ' + error);
 		});
 });
+router.post('/logout', function(req, res) {
+	res.clearCookie('x-account');
+	res.sendStatus(200);
+});
 
 router.post('/login', function(req, res) {
-	let { email, password } = req.body;
-	if (!email || !password) {
-		res.status(404).send('Missing email or password');
+	const reqBody = req.body;
+	const email = reqBody.email;
+	const password = reqBody.password ? reqBody.password : null;
+	const facebookId = reqBody.facebookId ? reqBody.facebookId : null;
+	if (!email || (!password && !facebookId)) {
+		res.status(404).send('Missing email or password or facebookId');
 		return;
 	}
+	// TODO: Put this into constant
+	const cookieAddition = 1000 * 60 * 60 * 24;
+	// TODO: Create actual cookie handling
+	if (!req.cookies['x-account']) {
+		res.cookie('x-account', email, { expire: Date.now() + cookieAddition });
+	} else {
+		if (req.cookies['x-account'] !== email) {
+			res.cookie('x-account', email, {
+				expire: Date.now() + cookieAddition,
+			});
+		}
+	}
 	fireDB
-		.Login(email, password)
+		.Login(email, password, facebookId)
 		.then(result => {
 			res.send(result);
 		})
@@ -38,10 +57,25 @@ router.post('/login', function(req, res) {
 		});
 });
 
+router.get('/login', async function(req, res) {
+	// TODO: Create actual cookie handling
+	if (!req.cookies['x-account']) {
+		res.sendStatus(404);
+	} else {
+		const account = await fireDB.GetAccountByEmail(
+			req.cookies['x-account']
+		);
+		if (account.accountId) {
+			res.send(account);
+		}
+		res.sendStatus(404);
+	}
+});
+
 router.post('/', async function(req, res) {
 	let account = new accountDef(req.body);
 	if (account.HasError()) {
-		//Create more full error handling
+		// TODO: Create more full error handling
 		res.status(400).send('Error');
 		return;
 	}
@@ -64,7 +98,7 @@ router.post('/', async function(req, res) {
 });
 router.post('/:id', async function(req, res) {
 	if (!req.params.id || !req.body) {
-		//Create more full error handling
+		// TODO: Create more full error handling
 		res.status(400).send('Error: Missing parameters');
 		return;
 	}
@@ -94,6 +128,7 @@ router.get('/:id', function(req, res) {
 router.get('/', function(req, res) {
 	// TODO: this belongs in the account getter
 	let { email } = req.query;
+
 	fireDB
 		.GetAccountByEmail(email)
 		.then(result => {

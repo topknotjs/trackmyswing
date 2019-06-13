@@ -7,7 +7,9 @@ export default class API {
 			config.data = data;
 			config.headers = {
 				'Content-Type': 'application/json',
+				'Access-Control-Allow-Credential': 'same-origin',
 			};
+			config.withCredentials = true;
 		}
 		return axios(config);
 	}
@@ -39,9 +41,39 @@ export default class API {
 				});
 		});
 	}
-	Login({ password, email }) {
+	Login(email, password, facebookId) {
+		const postData = { email };
+		if (facebookId) {
+			postData.facebookId = facebookId;
+		} else if (password) {
+			postData.password = password;
+		} else {
+			return;
+		}
 		return new Promise((resolve, reject) => {
-			this.call(`/api/account/login`, 'POST', { password, email })
+			this.call(`/api/account/login`, 'POST', postData)
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
+	GetLogin() {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/account/login`, 'GET')
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
+	Logout() {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/account/logout`, 'POST')
 				.then(result => {
 					resolve(result.data);
 				})

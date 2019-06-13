@@ -145,7 +145,7 @@ export class Create extends Component {
 			finishAccountWithFacebook: true,
 		});
 		// TODO: Figure out how to handle create account here on facebook response
-		// this.createAccount();
+		this.createAccount();
 	}
 
 	componentDidMount() {
@@ -216,7 +216,7 @@ export class Create extends Component {
 				<hr />
 				<FacebookLogin
 					appId={configs.FACEBOOK_APP_ID}
-					autoLoad={true}
+					autoLoad={false}
 					fields={configs.FACEBOOK_FIELDS}
 					scope={configs.FACEBOOK_SCOPES}
 					cssClass="facebook-login"

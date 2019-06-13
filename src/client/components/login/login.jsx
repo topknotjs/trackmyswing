@@ -52,12 +52,24 @@ export class Login extends Component {
 		// 	.catch(error => {
 		// 		console.log(error);
 		// 	});
+		this.api
+			.GetLogin()
+			.then(data => {
+				if (data.accountId) {
+					this.props.history.push(`/profile/${data.accountId}`);
+				} else {
+					console.log('Bad account data: ', data);
+				}
+			})
+			.catch(error => {
+				console.log('Get login data error: ', error);
+			});
 	}
 
 	login() {
 		ApiService.Login(this.state.form)
-			.then(result => {
-				this.props.history.push('/profile/' + result);
+			.then(accountData => {
+				this.props.history.push('/profile/' + accountData.accountId);
 			})
 			.catch(error => {
 				console.log('Api error: ', error);
@@ -91,23 +103,20 @@ export class Login extends Component {
 		// TODO: Sanitize the crap out of this!!
 		// this.createAccount();
 		if (!data.email) {
-			console.log('Facebook data has no email: ', data);
 			return;
 		}
 		// Get user by email
 		this.api
 			.GetAccountByEmail(data.email)
 			.then(account => {
-				this.props.history.push(`/profile/${account.accountId}`);
+				return ApiService.Login(data.email, null, data.id);
+			})
+			.then(loginData => {
+				this.props.history.push(`/profile/${loginData}`);
 			})
 			.catch(error => {
 				console.log('Account error: ', error);
 			});
-	}
-	componentDidMount() {
-		// FacebookApi.FetchUser().then(result => {
-		// 	console.log('User in component: ', result);
-		// });
 	}
 	render() {
 		return (
@@ -152,7 +161,7 @@ export class Login extends Component {
 					</div>
 					<FacebookLogin
 						appId={configs.FACEBOOK_APP_ID}
-						autoLoad={true}
+						autoLoad={false}
 						fields={configs.FACEBOOK_FIELDS}
 						scope={configs.FACEBOOK_SCOPES}
 						cssClass="facebook-login"

@@ -15,6 +15,7 @@ let memcache = require('./middlewares/memcache');
 let bodyParser = require('body-parser');
 let graph = require('fb-react-sdk');
 let CircularJSON = require('circular-json');
+const cookieParser = require('cookie-parser');
 const LoggerService = require('./handlers/logger');
 const environment = process.env.NODE_ENV.trim();
 let logger = new LoggerService();
@@ -24,6 +25,7 @@ let dancersAPI = dancers();
 let fireDB = fDB();
 var publicDir = path.resolve(__dirname, '../../public');
 const port = 8888;
+app.use(cookieParser());
 app.use(express.static(publicDir));
 
 app.use(bodyParser.json());

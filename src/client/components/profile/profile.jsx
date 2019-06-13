@@ -44,22 +44,7 @@ export class Profile extends Component {
 		// TODO: Check to see if user is logged into wcsconnect, if so, redirect to profile page
 		// TODO: If user is not logged in, have them log in with their username or with facebook.
 		// TODO: If user logs in with facebook, have them redirect to wcsconnect where we gather their wsdcid number, then send them to the profile page
-		this.confirmLoginStatus();
 		this.loadProfile();
-	}
-	confirmLoginStatus() {
-		// Login status received
-		FacebookApi.GetLoginStatus()
-			.then(result => {
-				console.log('Status result: ', result);
-				// Check to see if user is logged in with facebook
-				if (result.status === 'connected') {
-					this.setState({ loggedIn: true });
-				}
-			})
-			.catch(error => {
-				this.props.history.push('/login');
-			});
 	}
 	loadProfile() {
 		const profileId = getPageFromUrl(this.props.location);
@@ -76,6 +61,12 @@ export class Profile extends Component {
 			});
 		// Figure out what to do with this data and how to use it.
 		// FacebookApi.FetchUser();
+	}
+	logoutClicked(event) {
+		event.preventDefault();
+		ApiService.Logout().then(data => {
+			this.props.history.push('/login');
+		});
 	}
 	render() {
 		const RenderLoading = ({ loading }) =>
@@ -120,6 +111,9 @@ export class Profile extends Component {
 				<header className="header">
 					<h1>Profile</h1>
 				</header>
+				<a href="" onClick={e => this.logoutClicked(e)}>
+					Logout
+				</a>
 				<RenderLoading loading={this.state.loading} />
 			</main>
 		);

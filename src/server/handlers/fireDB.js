@@ -323,7 +323,7 @@ class DB {
 				});
 		});
 	}
-	Login(email, password) {
+	Login(email, password, facebookId) {
 		return new Promise((resolve, reject) => {
 			let ref = this.Con.ref('accounts');
 			ref.orderByChild('email')
@@ -333,15 +333,23 @@ class DB {
 					const accountRaw = snapshot.val();
 					const key = getSingleKeyFromSnapshot(accountRaw);
 					const account = getSingleValueFromSnapshot(accountRaw);
-					if (
-						AccountDef.CheckPasswordAgainstHashed(
-							password,
-							account.password
-						)
-					) {
-						resolve(key);
-					} else {
-						reject('Invalid password');
+					if (password) {
+						if (
+							AccountDef.CheckPasswordAgainstHashed(
+								password,
+								account.password
+							)
+						) {
+							resolve(key);
+						} else {
+							reject('Invalid password');
+						}
+					} else if (facebookId) {
+						if (facebookId === account.facebookId) {
+							resolve(key);
+						} else {
+							reject('Invalid facebookId');
+						}
 					}
 				})
 				.catch(error => {
