@@ -62,7 +62,7 @@ export class Login extends Component {
 				}
 			})
 			.catch(error => {
-				console.log('Get login data error: ', error);
+				// Not logged in
 			});
 	}
 

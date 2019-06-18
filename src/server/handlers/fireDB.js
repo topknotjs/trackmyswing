@@ -176,7 +176,7 @@ class DB {
 				});
 		});
 	}
-	WriteAttendanceToEvent(eventId, accountId) {
+	async writeAccountToEvent(eventId, accountId) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref('eventAttendees/' + eventId)
 				.orderByChild('accountId')
@@ -184,8 +184,9 @@ class DB {
 				.once('value', snapshot => {
 					if (snapshot.exists()) {
 						//Add logging here
-						console.log('Already exists!');
-						reject('Exists');
+						const message = `${eventId} for ${accountId} already exists`;
+						console.log(message);
+						reject(message);
 					} else {
 						console.log('Pushing: ', accountId);
 						this.Con.ref('eventAttendees/' + eventId + '/').push(

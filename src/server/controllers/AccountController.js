@@ -1,4 +1,6 @@
 const express = require('express');
+const AccountService = require('../services/AccountService');
+const HttpResponse = require('../definitions/HttpResponse');
 // const path = require('path');
 // const dancers = require('./handlers/dancers');
 const dancerDef = require('../definitions/Dancer');
@@ -9,18 +11,20 @@ const accountDef = require('../definitions/Account');
 let wsdcAPI = wsdc();
 let fireDB = fDB();
 let logger = new LoggerService();
-
+const accountService = new AccountService();
 const router = express.Router();
-router.post('/attend/:event_id/:account_id', function(req, res) {
-	fireDB
-		.WriteAttendanceToEvent(req.params.event_id, req.params.account_id)
-		.then(result => {
-			res.send('Success');
-		})
-		.catch(error => {
-			res.status(400).send('Error: ' + error);
-		});
+router.post('/attend/:event_id/:account_id', async function(req, res) {
+	try {
+		const response = await accountService.writeAttendanceToEvent(
+			req.params.event_id,
+			req.params.account_id
+		);
+		res.sendStatus(HttpResponse.Success);
+	} catch (error) {
+		res.status(HttpResponse.Conflict).send(error.toString());
+	}
 });
+
 router.post('/logout', function(req, res) {
 	res.clearCookie('x-account');
 	res.sendStatus(200);
