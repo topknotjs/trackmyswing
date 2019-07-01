@@ -144,8 +144,6 @@ export class Create extends Component {
 			}),
 			finishAccountWithFacebook: true,
 		});
-		// TODO: Figure out how to handle create account here on facebook response
-		this.createAccount();
 	}
 
 	componentDidMount() {
