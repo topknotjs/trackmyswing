@@ -218,9 +218,10 @@ export class Create extends Component {
 					fields={configs.FACEBOOK_FIELDS}
 					scope={configs.FACEBOOK_SCOPES}
 					cssClass="facebook-login"
-					textButton="Login with Facebook"
+					textButton="Connect with Facebook"
 					callback={e => this.responseFacebook(e)}
 				/>
+				<a href="/login">Login</a>
 			</section>
 		);
 	}

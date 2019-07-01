@@ -2,6 +2,7 @@ let dbConfig = require('./dbConfig');
 let firebase = require('firebase');
 let DancerDef = require('../definitions/Dancer');
 let AccountDef = require('../definitions/Account');
+const Event = require('../definitions/Event');
 let sanitizeEmail = require('../utils/sanitizeEmail');
 
 const getSingleValueFromSnapshot = snapshot => {
@@ -68,37 +69,59 @@ class DB {
 			let ref = this.Con.ref('events/');
 			let promises = [];
 			events.forEach(event => {
-				//console.log("Writing event: ", event);
 				let currProm = new Promise((eResolve, eReject) => {
-					ref.child(event.GetKey()).set(event, () => eResolve());
+					ref.child(event.getKey()).set(event, () => eResolve());
 				});
 				promises.push(currProm);
 			});
 			Promise.all(promises).then(() => resolve());
 		});
 	}
-	GetEvents() {
-		return new Promise((resolve, reject) => {
-			this.Con.ref('events')
-				.once('value')
-				.then(snapshot => {
-					//console.log("Events: ", snapshot.val());
-					resolve(snapshot.val());
-				});
-		});
+	async getEvents() {
+		try {
+			const snapshot = await this.Con.ref('events').once('value');
+			const events = [];
+			for (let key in snapshot.val()) {
+				let event = new Event();
+				event.processFBData(snapshot.val()[key]);
+				events.push(event);
+			}
+			return events;
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
-	GetEvent(id) {
-		return new Promise((resolve, reject) => {
-			this.Con.ref('events/' + id)
-				.once('value')
-				.then(snapshot => {
-					resolve(snapshot.val());
-				})
-				.catch(error => {
-					console.log('Event error: ', error);
-					reject(error);
-				});
-		});
+	async getEvent(id) {
+		try {
+			const snapshot = await this.Con.ref('events/' + id).once('value');
+			const event = new Event();
+			event.processFBData(snapshot.val());
+			return event;
+		} catch (error) {
+			throw new Error(error);
+		}
+		// return new Promise((resolve, reject) => {
+		// 	this.Con.ref('events/' + id)
+		// 		.once('value')
+		// 		.then(snapshot => {
+		// 			resolve(snapshot.val());
+		// 		})
+		// 		.catch(error => {
+		// 			console.log('Event error: ', error);
+		// 			reject(error);
+		// 		});
+		// });
+	}
+	async getEventsOrderedByYear(year) {
+		try {
+			const snapshot = await this.Con.ref('events')
+				.orderByKey()
+				.startAt(year)
+				.once('value');
+			return snapshot.val();
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
 	// TODO: Make updating events available when necessary
 	// UpdateEvent(id, data){
@@ -118,7 +141,7 @@ class DB {
 	/**
 	 * Figure out a key to write the event to the database
 	 */
-	WriteEventToFirebase(eventkey, event) {
+	writeEventToFirebase(eventkey, event) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref('events/' + eventkey).set(event, () => resolve());
 		});
@@ -191,7 +214,6 @@ class DB {
 						const message = `${eventId} for ${accountId} already exists`;
 						reject(message);
 					} else {
-						console.log('Pushing: ', accountId);
 						this.Con.ref('eventAttendees/' + eventId + '/').push(
 							{ accountId },
 							() => resolve(accountId)

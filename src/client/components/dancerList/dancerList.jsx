@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+require('./dancerList.scss');
 
 export default class DancerList extends Component {
 	static propTypes = {
-		dancers: PropTypes.string,
+		dancers: PropTypes.array,
 	};
 	constructor(props) {
 		super(props);
@@ -17,7 +18,12 @@ export default class DancerList extends Component {
 				{this.state.dancers.map((dancer, index) => {
 					return (
 						<li className="dancer-list-item" key={index}>
-							{dancer.firstName} {dancer.lastName}
+							<span className="dancer-list-item__part dancer-list-item__primary">
+								{dancer.firstName} {dancer.lastName} |
+							</span>
+							<span className="dancer-list-item__part dancer-list-item__secondary">
+								{dancer.wsdcid}
+							</span>
 						</li>
 					);
 				})}

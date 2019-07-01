@@ -169,6 +169,7 @@ export class Login extends Component {
 						size="medium"
 						callback={e => this.responseFacebook(e)}
 					/>
+					<a href="/create">Create Account</a>
 				</section>
 			</main>
 		);

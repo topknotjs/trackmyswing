@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import API from './../../libs/api.jsx';
 import DancerList from '../dancerList/dancerList.jsx';
-import FacebookApi from '../../classes/FacebookApi.jsx';
 import className from 'classnames';
 
 require('./home.scss');
@@ -73,9 +72,9 @@ export class Home extends Component {
 		this.searchDancers();
 	}
 	componentDidMount() {
-		FacebookApi.FetchUser().then(result => {
-			console.log('User in component: ', result);
-		});
+		// FacebookApi.FetchUser().then(result => {
+		// 	console.log('User in component: ', result);
+		// });
 	}
 	render() {
 		const getButtonClass = isActive =>
@@ -91,6 +90,9 @@ export class Home extends Component {
 				<header className="container-header">
 					<h1>Find my Strictly</h1>
 				</header>
+				<nav className="container-menu">
+					<a href="/login">Login</a>
+				</nav>
 				<section className="container-body">
 					<div className="form-container">
 						<label className="form-label">Division</label>
