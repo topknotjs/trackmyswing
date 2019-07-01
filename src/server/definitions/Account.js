@@ -17,7 +17,7 @@ class Account {
 		this._error = false;
 
 		if (!data) return;
-		if (!this.ValidateAccount(data)) {
+		if (!Account.ValidateAccount(data)) {
 			return;
 		}
 		this.ProcessAccount(data);
@@ -45,9 +45,12 @@ class Account {
 		console.log('Account error message: ', msg);
 		this._error = msg;
 	}
+	getError() {
+		return this._error;
+	}
 	ProcessAccount(data) {
 		this.AccountId = data.hasOwnProperty('accountId') ? data.accountId : '';
-		this.Username = data.hasOwnProperty('userName') ? data.userName : '';
+		this.Username = data.hasOwnProperty('username') ? data.username : '';
 		this.Email = data.hasOwnProperty('email') ? data.email : '';
 		this.FirstName = data.hasOwnProperty('firstName') ? data.firstName : '';
 		this.LastName = data.hasOwnProperty('lastName') ? data.lastName : '';
@@ -66,10 +69,7 @@ class Account {
 			this.setError('No email on account.');
 		}
 	}
-	ValidateAccount(data) {
-		return true;
-	}
-	HasError() {
+	hasError() {
 		return this._error;
 	}
 	Copy(data) {
@@ -84,6 +84,9 @@ class Account {
 
 			this[key] = data[key];
 		}
+	}
+	static ValidateAccount(data) {
+		return true;
 	}
 	static AccountFromFirebase(data) {
 		let newAccount = new Account();

@@ -12,6 +12,7 @@ let fDB = require('./handlers/fireDB');
 let dancerDef = require('./definitions/Dancer');
 let accountDef = require('./definitions/Account');
 let memcache = require('./middlewares/memcache');
+const handleCookies = require('./middlewares/cookies').handleCookies;
 let bodyParser = require('body-parser');
 let graph = require('fb-react-sdk');
 let CircularJSON = require('circular-json');
@@ -26,19 +27,11 @@ let fireDB = fDB();
 var publicDir = path.resolve(__dirname, '../../public');
 const port = 8888;
 app.use(cookieParser());
+app.use(handleCookies);
 app.use(express.static(publicDir));
 
 app.use(bodyParser.json());
-/**
- * This is a hacked cache-control
- * Need to finesse this with express
- */
-app.use((req, res, next) => {
-	res.header({
-		'Cache-Control': 'max-age=36000',
-	});
-	next();
-});
+// TODO: Add caching, include cache-control
 
 app.use('/api/dancers', memcache(3600), DancersController);
 

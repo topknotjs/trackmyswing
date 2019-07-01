@@ -123,10 +123,9 @@ class DB {
 			this.Con.ref('events/' + eventkey).set(event, () => resolve());
 		});
 	}
-	WriteAccountToFirebase(account) {
+	writeAccountToFirebase(account) {
 		return new Promise((resolve, reject) => {
 			const ref = this.Con.ref('accounts').push();
-			console.log(`Writing account to refid: ${ref.key}`);
 			ref.then(() => {
 				ref.set({
 					...account.toJSON(true),
@@ -144,31 +143,36 @@ class DB {
 		});
 	}
 	// TODO: Error handle when id does not exist
-	UpdateAccountInFirebase(id, data) {
-		if (data.hasOwnProperty('email')) {
-			delete data.email;
-		}
-		let accountUpdateData = new AccountDef(data).toJSON();
-		let updatedAccount = null;
+	updateAccountInFirebase(id, data) {
+		// TODO: Consider creating a method of validating account data other than creating an account object
 		return new Promise((resolve, reject) => {
-			this.GetAccountById(id)
+			if (!AccountDef.ValidateAccount(data)) {
+				reject('Invalid account data');
+				return;
+			}
+			const accountUpdateData = new AccountDef(data).toJSON();
+			let updatedAccount = null;
+			// TODO: Move this logic into the account service rather than doing it all in the firebase handler
+			this.getAccountById(id)
 				.then(updateableAccount => {
+					const updateableAccountData = updateableAccount.toJSON();
 					for (let key in accountUpdateData) {
 						if (
 							!accountUpdateData.hasOwnProperty(key) ||
 							!accountUpdateData.hasOwnProperty(key) ||
 							!accountUpdateData[key]
-						)
+						) {
 							continue;
-						updateableAccount[key] = accountUpdateData[key];
+						}
+						updateableAccountData[key] = accountUpdateData[key];
 					}
-					updatedAccount = updateableAccount;
+					updatedAccount = updateableAccountData;
 					return this.Con.ref('accounts/' + id).set(
-						updateableAccount
+						updateableAccountData
 					);
 				})
 				.then(result => {
-					resolve(updatedAccount);
+					resolve(new AccountDef(updatedAccount));
 				})
 				.catch(error => {
 					console.log('Error: ', error);
@@ -185,7 +189,6 @@ class DB {
 					if (snapshot.exists()) {
 						//Add logging here
 						const message = `${eventId} for ${accountId} already exists`;
-						console.log(message);
 						reject(message);
 					} else {
 						console.log('Pushing: ', accountId);
@@ -197,15 +200,7 @@ class DB {
 				});
 		});
 	}
-	TestCon() {
-		return new Promise((resolve, reject) => {
-			console.log('set');
-			this.Con.ref('test/').set({ test: true }, res => {
-				console.log('Set complete!: ', res);
-			});
-		});
-	}
-	GetAccountById(id) {
+	async getAccountById(id) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts/${id}`)
 				.once('value')
@@ -228,19 +223,24 @@ class DB {
 				});
 		});
 	}
-	async GetAccountByEmail(email) {
+	async getAccountByEmail(email) {
 		return new Promise((resolve, reject) => {
 			this.Con.ref(`accounts`)
 				.orderByChild('email')
-				.equalTo(sanitizeEmail(email))
+				.equalTo(email)
 				.once('value')
 				.then(snapshot => {
 					const accountRaw = snapshot.val();
-					const account = new AccountDef(
-						getSingleValueFromSnapshot(accountRaw)
-					);
 					// TODO: Check for errors from account def here
-					resolve(account.toJSON());
+					if (!accountRaw) {
+						resolve(null);
+					} else {
+						resolve(
+							new AccountDef(
+								getSingleValueFromSnapshot(accountRaw)
+							)
+						);
+					}
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);
@@ -324,7 +324,7 @@ class DB {
 				});
 		});
 	}
-	Login(email, password, facebookId) {
+	async loginAccount(email, password, facebookId) {
 		return new Promise((resolve, reject) => {
 			let ref = this.Con.ref('accounts');
 			ref.orderByChild('email')

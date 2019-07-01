@@ -8,11 +8,13 @@ const fDB = require('../handlers/fireDB');
 const LoggerService = require('../handlers/logger');
 const wsdc = require('../handlers/wsdc');
 const accountDef = require('../definitions/Account');
+const CookiesHandler = require('../middlewares/cookies').CookiesHandler;
 let wsdcAPI = wsdc();
 let fireDB = fDB();
 let logger = new LoggerService();
 const accountService = new AccountService();
 const router = express.Router();
+
 router.post('/attend/:event_id/:account_id', async function(req, res) {
 	try {
 		const response = await accountService.writeAttendanceToEvent(
@@ -27,120 +29,112 @@ router.post('/attend/:event_id/:account_id', async function(req, res) {
 
 router.post('/logout', function(req, res) {
 	res.clearCookie('x-account');
-	res.sendStatus(200);
+	res.sendStatus(HttpResponse.Success);
 });
 
-router.post('/login', function(req, res) {
+router.post('/login', async function(req, res) {
 	const reqBody = req.body;
 	const email = reqBody.email;
 	const password = reqBody.password ? reqBody.password : null;
 	const facebookId = reqBody.facebookId ? reqBody.facebookId : null;
 	if (!email || (!password && !facebookId)) {
-		res.status(404).send('Missing email or password or facebookId');
+		res.status(HttpResponse.NotFound).send(
+			'Missing email or password or facebookId'
+		);
 		return;
 	}
-	// TODO: Put this into constant
-	const cookieAddition = 1000 * 60 * 60 * 24;
-	// TODO: Create actual cookie handling
-	if (!req.cookies['x-account']) {
-		res.cookie('x-account', email, { expire: Date.now() + cookieAddition });
-	} else {
-		if (req.cookies['x-account'] !== email) {
-			res.cookie('x-account', email, {
-				expire: Date.now() + cookieAddition,
-			});
-		}
+	res.cookieHandler.checkOrSetCookie(
+		'x-account',
+		email,
+		Date.now() + CookiesHandler.DefaultExpire
+	);
+
+	try {
+		const response = await accountService.login(
+			email,
+			password,
+			facebookId
+		);
+		res.send(response);
+	} catch (error) {
+		console.log('Error: ', error);
+		res.status(HttpResponse.InternalServerError).send(error.toString());
 	}
-	fireDB
-		.Login(email, password, facebookId)
-		.then(result => {
-			res.send(result);
-		})
-		.catch(error => {
-			res.status(404).send('Login error: ' + error);
-		});
 });
 
 router.get('/login', async function(req, res) {
 	// TODO: Create actual cookie handling
-	if (!req.cookies['x-account']) {
-		res.sendStatus(404);
+	if (!res.cookieHandler.hasCookie('x-account')) {
+		res.sendStatus(HttpResponse.NotFound);
 	} else {
-		const account = await fireDB.GetAccountByEmail(
-			req.cookies['x-account']
-		);
-		if (account.accountId) {
-			res.send(account);
+		try {
+			const account = await accountService.getAccountByEmail(
+				res.cookieHandler.getCookie('x-account')
+			);
+			if (account.accountId) {
+				res.send(account);
+			} else {
+				res.sendStatus(HttpResponse.NotFound);
+			}
+		} catch (error) {
+			res.sendStatus(HttpResponse.InternalServerError).send(error);
 		}
-		res.sendStatus(404);
 	}
 });
 
 router.post('/', async function(req, res) {
-	let account = new accountDef(req.body);
-	if (account.HasError()) {
-		// TODO: Create more full error handling
-		res.status(400).send('Error');
-		return;
+	try {
+		const updatedAccount = await accountService.upsertAccount(req.body);
+		res.send(updatedAccount.toJSON());
+	} catch (error) {
+		res.status(HttpResponse.InternalServerError).send(error);
 	}
-	let dupAccount = await fireDB.GetAccountByEmail(account.Email);
-	if (!!dupAccount) {
-		res.send('Error: duplicate account');
-		return;
-	}
-	fireDB
-		.WriteAccountToFirebase(account)
-		.then(accountId => {
-			return fireDB.GetAccountById(accountId);
-		})
-		.then(result => {
-			res.send(result.toJSON());
-		})
-		.catch(error => {
-			res.status(400).send('Error: ' + error);
-		});
 });
+
 router.post('/:id', async function(req, res) {
 	if (!req.params.id || !req.body) {
 		// TODO: Create more full error handling
-		res.status(400).send('Error: Missing parameters');
+		res.status(HttpResponse.BadRequest).send('Error: Missing parameters');
 		return;
 	}
 	let { id } = req.params;
 	let data = req.body;
-	fireDB
-		.UpdateAccountInFirebase(id, data)
-		.then(result => {
-			res.send(result);
-		})
-		.catch(error => {
-			res.status(400).send('Error: ' + error);
-		});
+	try {
+		const updatedAccount = await accountService.updateAccount(id, data);
+		res.send(updatedAccount.toJSON());
+	} catch (error) {
+		res.status(HttpResponse.InternalServerError).send(error);
+	}
 });
-router.get('/:id', function(req, res) {
+router.get('/:id', async function(req, res) {
 	// TODO: this belongs in the account getter
 	let { id } = req.params;
-	fireDB
-		.GetAccountById(id)
-		.then(result => {
-			res.send(result);
-		})
-		.catch(error => {
-			res.status(404).send('Error: ' + error);
-		});
+	try {
+		const account = await accountService.getAccountById(id);
+
+		if (account.AccountId) {
+			res.send(account.toJSON());
+		} else {
+			res.sendStatus(HttpResponse.NotFound);
+		}
+	} catch (error) {
+		res.status(HttpResponse.InternalServerError).send(error);
+	}
 });
-router.get('/', function(req, res) {
+router.get('/', async function(req, res) {
 	// TODO: this belongs in the account getter
 	let { email } = req.query;
 
-	fireDB
-		.GetAccountByEmail(email)
-		.then(result => {
-			res.send(result);
-		})
-		.catch(error => {
-			res.status(404).send('Error: ' + error);
-		});
+	try {
+		const account = await accountService.getAccountByEmail(email);
+		if (account.AccountId) {
+			res.send(account.toJSON());
+		} else {
+			res.sendStatus(HttpResponse.NotFound);
+		}
+	} catch (error) {
+		res.status(HttpResponse.InternalServerError).send(error);
+	}
 });
 router.get('/facebook/', async function(req, res) {
 	console.log('received content from facebook: ', req.body, req.params);
