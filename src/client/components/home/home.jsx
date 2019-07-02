@@ -39,9 +39,9 @@ export class Home extends Component {
 		};
 	}
 	searchDancers() {
-		let { division, role, qualifies } = this.state.form;
+		let { division, role } = this.state.form;
 		this.setState({ searchPending: true });
-		ApiService.GetDancers(division, role, qualifies)
+		ApiService.GetDancers(division, role, true)
 			.then(results => {
 				this.setState({ dancers: results, searchPending: false });
 			})
@@ -53,13 +53,17 @@ export class Home extends Component {
 	isSubmitAvailable() {
 		return this.state.form.division !== '' && this.state.form.role !== '';
 	}
-	onDivisionChange(division) {
+	onDivisionChange(event) {
 		let form = this.state.form;
-		this.setState({ form: Object.assign({}, form, { division }) });
+		this.setState({
+			form: Object.assign({}, form, { division: event.target.value }),
+		});
 	}
-	onRoleChange(role) {
+	onRoleChange(event) {
 		let form = this.state.form;
-		this.setState({ form: Object.assign({}, form, { role }) });
+		this.setState({
+			form: Object.assign({}, form, { role: event.target.value }),
+		});
 	}
 	onQualifiesChange($event) {
 		let form = this.state.form;
@@ -77,84 +81,85 @@ export class Home extends Component {
 		// });
 	}
 	render() {
-		const getButtonClass = isActive =>
-			className('form-selector__action', 'btn', 'btn-light', {
-				'btn-success': isActive,
-			});
 		const getSubmitClass = isSubmitable =>
 			className('form-submit', 'btn', 'btn-light', {
 				'btn-primary': isSubmitable,
 			});
 		return (
 			<main className="strictly-container">
-				<header className="container-header">
-					<h1>Find my Strictly</h1>
-				</header>
-				<nav className="container-menu">
-					<a href="/login">Login</a>
-				</nav>
-				<section className="container-body">
-					<div className="form-container">
-						<label className="form-label">Division</label>
-						<div className="form-selector division">
-							{DIVISIONS.map((division, index) => {
-								return (
-									<button
-										className={getButtonClass(
-											division.Key ===
-												this.state.form.division
-										)}
-										onClick={e =>
-											this.onDivisionChange(division.Key)
+				<section className="search-container">
+					<header className="container-header">
+						<h1>Find my Strictly</h1>
+					</header>
+					<section className="container-body">
+						<div className="form-container">
+							<select
+								placeholder="Select"
+								className="form-selector division"
+								onChange={e => this.onDivisionChange(e)}
+							>
+								<option hidden disabled selected value>
+									Select Division
+								</option>
+								{DIVISIONS.map((division, index) => {
+									return (
+										<option
+											value={division.Key}
+											key={index}
+										>
+											{division.Label}
+										</option>
+									);
+								})}
+							</select>
+						</div>
+						<div className="form-container">
+							<select
+								className="form-selector role"
+								onChange={e => this.onRoleChange(e)}
+							>
+								<option hidden disabled selected value>
+									Select Role
+								</option>
+								{ROLES.map((role, index) => {
+									return (
+										<option key={index} value={role.Key}>
+											{role.Label}
+										</option>
+									);
+								})}
+							</select>
+						</div>
+						{/* <div className="form-container">
+							<label className="form-label">Qualifies: </label>
+							<div className="form-selector qualifies">
+								<label className="switch">
+									<input
+										name="qualifies"
+										type="checkbox"
+										id="qualifies"
+										onChange={e =>
+											this.onQualifiesChange(e)
 										}
-										key={index}
-									>
-										{division.Label}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-					<div className="form-container">
-						<label className="form-label">Role</label>
-						<div className="form-selector role">
-							{ROLES.map((role, index) => {
-								return (
-									<button
-										className={getButtonClass(
-											role.Key === this.state.form.role
-										)}
-										onClick={e =>
-											this.onRoleChange(role.Key)
-										}
-										key={index}
-									>
-										{role.Label}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-					<div className="form-container parallel">
-						<label className="form-label">Qualifies: </label>
-						<div className="form-selector qualifies">
-							<label className="switch">
-								<input
-									name="qualifies"
-									type="checkbox"
-									id="qualifies"
-									onChange={e => this.onQualifiesChange(e)}
-								/>
-								<span className="slider round" />
-							</label>
-						</div>
-					</div>
-					<button
-						className={getSubmitClass(this.isSubmitAvailable())}
-						onClick={() => this.onSubmitClicked()}
-					>
-						Submit
-					</button>
+									/>
+									<span className="slider round" />
+								</label>
+							</div>
+						</div> */}
+						<button
+							className={getSubmitClass(this.isSubmitAvailable())}
+							onClick={() => this.onSubmitClicked()}
+						>
+							Submit
+						</button>
+					</section>
+					<section className="container-footer">
+						<a className="create-account-link" href="/create">
+							Create Account
+						</a>
+					</section>
+				</section>
+				<section className="results-container">
 					{this.state.searchPending ? (
 						getLoader()
 					) : (
