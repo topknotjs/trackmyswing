@@ -47,7 +47,11 @@ export class Profile extends Component {
 		this.loadProfile();
 	}
 	loadProfile() {
-		const profileId = getPageFromUrl(this.props.location);
+		if (!this.props.match.params.id) {
+			this.props.history.push('/login');
+			return;
+		}
+		const profileId = this.props.match.params.id;
 		this.setState({ loading: true });
 		ApiService.GetAccountById(profileId)
 			.then(profile => {
@@ -74,23 +78,26 @@ export class Profile extends Component {
 				<div className="loading" />
 			) : (
 				<section className="profile-area">
-					<div className="profile-area__item">
-						<label className="label">Username</label>
-						<p>{`${this.state.profile.firstName} ${
-							this.state.profile.lastName
-						}`}</p>
-					</div>
+					<header className="profile-area__header-row">
+						<div className="profile-area__item primary">
+							<img
+								// TODO: create a default profile image
+								className="profile-img"
+								src={this.state.profile.profileImageUrl}
+								alt="Profile image"
+							/>
+						</div>
+						<div className="profile-area__item secondary">
+							<p className="profile-fullname">{`${
+								this.state.profile.firstName
+							} ${this.state.profile.lastName}`}</p>
+						</div>
+					</header>
+					<div className="profile-area__item" />
+					<div className="profile-area__item" />
 					<div className="profile-area__item">
 						<label className="label">Email</label>
 						<p>{this.state.profile.email}</p>
-					</div>
-					<div className="profile-area__item">
-						<label className="label">Profile url</label>
-						<img
-							// TODO: create a default profile image
-							src={this.state.profile.profileImageUrl}
-							alt="Profile image"
-						/>
 					</div>
 					<div className="profile-area__item">
 						<label className="label">Wsdcid</label>
@@ -107,13 +114,28 @@ export class Profile extends Component {
 				</section>
 			);
 		return (
-			<main>
-				<header className="header">
-					<h1>Profile</h1>
-				</header>
-				<a href="" onClick={e => this.logoutClicked(e)}>
-					Logout
-				</a>
+			<main className="page-container">
+				<nav className="page-control">
+					<header className="header">
+						<h1>Home</h1>
+					</header>
+					<a
+						className="logout-link"
+						href=""
+						onClick={e => this.logoutClicked(e)}
+					>
+						Logout
+					</a>
+					<a className="home-link btn btn-primary" href="/home">
+						Find a Partner
+					</a>
+					<ul className="page-control__navigation">
+						<li className="nav-item">Me</li>
+						<li className="nav-item">Partnerships</li>
+						<li className="nav-item">Events</li>
+						<li className="nav-item">Settings</li>
+					</ul>
+				</nav>
 				<RenderLoading loading={this.state.loading} />
 			</main>
 		);

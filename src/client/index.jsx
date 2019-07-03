@@ -23,6 +23,7 @@ class App extends Component {
 				<Switch>
 					<Route path="/login" component={Login} />
 					<Route path="/create" component={Create} />
+					<Route path="/profile/:id" component={Profile} />
 					<Route path="/profile" component={Profile} />
 					<Route path="/home" component={Home} />
 					<Route path="/" render={() => <Redirect to="/login" />} />

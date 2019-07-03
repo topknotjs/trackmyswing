@@ -2,16 +2,65 @@
 @import '../../shared/assets/styles/reset';
 @import '../../shared/assets/styles/global';
 
-.profile-area{
-  min-width: 65rem;
-  width: 50%;
-  margin: 0 auto;
+.page-container {
+	display: flex;
+	flex-direction: row;
+}
 
-  &__item{
-    margin: 1rem 0;
+.page-control {
+	width: 20%;
+	min-width: 20rem;
+	background: #ccc;
+	height: 100vh;
+	&__navigation {
+		width: 100%;
+		margin: 3rem 0;
+	}
 
-    .label{
-      color: #000;
-    }
-  }
+	.nav-item {
+		padding: 2rem 5rem;
+		border-bottom: 1px solid #bbb;
+		&:hover {
+			background: #bbb;
+		}
+		&:first-child {
+			border-top: 1px solid #bbb;
+		}
+	}
+}
+
+.logout-link,
+.home-link {
+	display: block;
+}
+
+.profile-area {
+	min-width: 65rem;
+	width: 80%;
+	padding-left: 5rem;
+
+	&__header-row {
+		width: 100%;
+		display: flex;
+		min-height: 20rem;
+		height: 20vh;
+		.primary {
+			width: 10%;
+		}
+	}
+
+	.profile-img {
+		width: 100%;
+	}
+	.profile-fullname {
+		margin-left: 3rem;
+	}
+	&__item {
+		margin: 1rem 0;
+		align-self: flex-end;
+
+		.label {
+			color: #000;
+		}
+	}
 }
