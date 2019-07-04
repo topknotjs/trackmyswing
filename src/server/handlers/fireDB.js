@@ -1,9 +1,9 @@
-let dbConfig = require('./dbConfig');
-let firebase = require('firebase');
-let DancerDef = require('../definitions/Dancer');
-let AccountDef = require('../definitions/Account');
+const dbConfig = require('./dbConfig');
+const firebase = require('firebase');
+const Dancer = require('../definitions/Dancer');
+const Account = require('../definitions/Account');
 const Event = require('../definitions/Event');
-let sanitizeEmail = require('../utils/sanitizeEmail');
+const sanitizeEmail = require('../utils/sanitizeEmail');
 
 const getSingleValueFromSnapshot = snapshot => {
 	for (let key in snapshot) {
@@ -60,8 +60,12 @@ class DB {
 			});
 	}
 
-	WriteDancerToFirebase(wsdcid, dancer) {
-		this.Con.ref('dancers/' + wsdcid).set(dancer);
+	async writeDancerToFirebase(dancer) {
+		try {
+			this.Con.ref('dancers/' + dancer.WSDCID).set(dancer.toJSON());
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
 	WriteEventsToFirebase(events) {
 		return new Promise((resolve, reject) => {
@@ -100,17 +104,6 @@ class DB {
 		} catch (error) {
 			throw new Error(error);
 		}
-		// return new Promise((resolve, reject) => {
-		// 	this.Con.ref('events/' + id)
-		// 		.once('value')
-		// 		.then(snapshot => {
-		// 			resolve(snapshot.val());
-		// 		})
-		// 		.catch(error => {
-		// 			console.log('Event error: ', error);
-		// 			reject(error);
-		// 		});
-		// });
 	}
 	async getEventsOrderedByYear(year) {
 		try {
@@ -169,11 +162,11 @@ class DB {
 	updateAccountInFirebase(id, data) {
 		// TODO: Consider creating a method of validating account data other than creating an account object
 		return new Promise((resolve, reject) => {
-			if (!AccountDef.ValidateAccount(data)) {
+			if (!Account.ValidateAccount(data)) {
 				reject('Invalid account data');
 				return;
 			}
-			const accountUpdateData = new AccountDef(data).toJSON();
+			const accountUpdateData = new Account(data).toJSON();
 			let updatedAccount = null;
 			// TODO: Move this logic into the account service rather than doing it all in the firebase handler
 			this.getAccountById(id)
@@ -195,7 +188,7 @@ class DB {
 					);
 				})
 				.then(result => {
-					resolve(new AccountDef(updatedAccount));
+					resolve(new Account(updatedAccount));
 				})
 				.catch(error => {
 					console.log('Error: ', error);
@@ -233,7 +226,7 @@ class DB {
 						return;
 					}
 					resolve(
-						new AccountDef({
+						new Account({
 							...accountData,
 							accountId: id,
 						})
@@ -258,23 +251,32 @@ class DB {
 						resolve(null);
 					} else {
 						resolve(
-							new AccountDef(
-								getSingleValueFromSnapshot(accountRaw)
-							)
+							new Account(getSingleValueFromSnapshot(accountRaw))
 						);
 					}
 				})
 				.catch(error => {
-					console.log(`Getting account ${id} error: ${error}`);
+					console.log(`Getting account ${email} error: ${error}`);
 					reject(error);
 				});
 		});
+	}
+	async getDancer(wsdcid) {
+		try {
+			const snapshot = await this.Con.ref('dancers/' + wsdcid).once(
+				'value'
+			);
+			console.log('Snapshot: ', snapshot.val());
+			return new Dancer(snapshot.val());
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
 	GetDancersByDivision(division) {
 		return new Promise((resolve, reject) => {
 			let ref = this.Con.ref('dancers');
 			ref.orderByChild('Division')
-				.equalTo(DancerDef.SanitizeDivision(division))
+				.equalTo(Dancer.SanitizeDivision(division))
 				.once('value')
 				.then(snapshot => {
 					console.log(snapshot.val());
@@ -288,8 +290,8 @@ class DB {
 	//Create synthetic indexes for the division/role/qualifies
 	GetDancersByDivisionRoleQualifies(divisionInput, roleInput, qualifies) {
 		return new Promise((resolve, reject) => {
-			let division = DancerDef.SanitizeDivision(divisionInput),
-				role = DancerDef.SanitizeRole(roleInput);
+			let division = Dancer.SanitizeDivision(divisionInput),
+				role = Dancer.SanitizeRole(roleInput);
 			if (division === null) {
 				reject('Bad division input.');
 				return;
@@ -301,17 +303,17 @@ class DB {
 			let ref = this.Con.ref('dancers');
 			const keys = [`${division}-${role}`, `${division}-${role}-q`],
 				queries = [];
-			if (qualifies && DancerDef.IsPreviousDivisionAvailable(division)) {
+			if (qualifies && Dancer.IsPreviousDivisionAvailable(division)) {
 				keys.push(
-					`${DancerDef.SanitizeDivision(
-						DancerDef.GetPreviousDivision(division)
+					`${Dancer.SanitizeDivision(
+						Dancer.GetPreviousDivision(division)
 					)}-${role}-q`
 				);
 			}
 			keys.forEach(key => {
 				queries.push(
 					ref
-						.orderByChild('DivisionRoleQualifies')
+						.orderByChild('divisionRoleQualifies')
 						.equalTo(key)
 						.once('value')
 				);
@@ -326,7 +328,7 @@ class DB {
 						}, []),
 						dancersArray = [];
 					for (let key in compMap) {
-						const newDancer = new DancerDef(compMap[key]);
+						const newDancer = new Dancer(compMap[key]);
 						if (newDancer.Relevance <= 2) {
 							dancersArray.push(newDancer);
 						}
@@ -358,7 +360,7 @@ class DB {
 					const account = getSingleValueFromSnapshot(accountRaw);
 					if (password) {
 						if (
-							AccountDef.CheckPasswordAgainstHashed(
+							Account.CheckPasswordAgainstHashed(
 								password,
 								account.password
 							)

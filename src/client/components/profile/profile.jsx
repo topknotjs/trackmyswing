@@ -1,24 +1,11 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { Me } from './me/me.jsx';
+import classNames from 'classnames';
 import API from '../../libs/api.jsx';
-import FacebookLogin from 'react-facebook-login';
-import FacebookApi from '../../classes/FacebookApi.jsx';
-import configs from '../../config/config';
-import { getPageFromUrl } from '../../libs/utils';
 
 require('./profile.scss');
-
-const DIVISIONS = [
-	{ Key: 'champion', Label: 'Champions' },
-	{ Key: 'allstar', Label: 'All-Stars' },
-	{ Key: 'advanced', Label: 'Advanced' },
-	{ Key: 'intermediate', Label: 'Intermediate' },
-	{ Key: 'novice', Label: 'Novice' },
-	{ Key: 'newcomer', Label: 'Newcomer' },
-];
-const ROLES = [
-	{ Key: 'leader', Label: 'Leader' },
-	{ Key: 'follower', Label: 'Follower' },
-];
 
 const DefaultAccountData = {
 	userName: '',
@@ -29,6 +16,38 @@ const DefaultAccountData = {
 	profileImageUrl: '',
 };
 
+const defaultMenuItem = 'me';
+const navMenuData = [
+	{
+		key: 'me',
+		label: 'Me',
+		component: function(props) {
+			return <Me profile={this.state.profile} />;
+		},
+	},
+	{
+		key: 'partnerships',
+		label: 'Partnerships',
+		component: function(props) {
+			return <p>Partnerships</p>;
+		},
+	},
+	{
+		key: 'events',
+		label: 'Events',
+		component: function(props) {
+			return <p>Events</p>;
+		},
+	},
+	{
+		key: 'settings',
+		label: 'Settings',
+		component: function(props) {
+			return <p>Settings</p>;
+		},
+	},
+];
+
 const ApiService = new API();
 export class Profile extends Component {
 	constructor(props) {
@@ -37,6 +56,9 @@ export class Profile extends Component {
 			profile: Object.assign({}, DefaultAccountData),
 			loggedIn: false,
 			loading: true,
+			area: !props.match.params.area
+				? defaultMenuItem
+				: props.match.params.area,
 		};
 	}
 	componentDidMount() {
@@ -45,6 +67,11 @@ export class Profile extends Component {
 		// TODO: If user is not logged in, have them log in with their username or with facebook.
 		// TODO: If user logs in with facebook, have them redirect to wcsconnect where we gather their wsdcid number, then send them to the profile page
 		this.loadProfile();
+	}
+	componentDidUpdate() {
+		if (this.props.match.params.area !== this.state.area) {
+			this.setState({ area: this.props.match.params.area });
+		}
 	}
 	loadProfile() {
 		if (!this.props.match.params.id) {
@@ -72,46 +99,33 @@ export class Profile extends Component {
 			this.props.history.push('/login');
 		});
 	}
+	buildNavUrl(area) {
+		return `/profile/${this.props.match.params.id}/${area}`;
+	}
 	render() {
 		const RenderLoading = ({ loading }) =>
 			loading ? (
 				<div className="loading" />
 			) : (
-				<section className="profile-area">
-					<header className="profile-area__header-row">
-						<div className="profile-area__item primary">
-							<img
-								// TODO: create a default profile image
-								className="profile-img"
-								src={this.state.profile.profileImageUrl}
-								alt="Profile image"
+				<Switch>
+					{navMenuData.map((menuItem, index) => (
+						<Route
+							key={index}
+							path={`/profile/:id/${menuItem.key}`}
+							component={menuItem.component.bind(this)}
+						/>
+					))}
+					<Route
+						path={`/profile/:id`}
+						render={() => (
+							<Redirect
+								to={`/profile/${
+									this.props.match.params.id
+								}/${defaultMenuItem}`}
 							/>
-						</div>
-						<div className="profile-area__item secondary">
-							<p className="profile-fullname">{`${
-								this.state.profile.firstName
-							} ${this.state.profile.lastName}`}</p>
-						</div>
-					</header>
-					<div className="profile-area__item" />
-					<div className="profile-area__item" />
-					<div className="profile-area__item">
-						<label className="label">Email</label>
-						<p>{this.state.profile.email}</p>
-					</div>
-					<div className="profile-area__item">
-						<label className="label">Wsdcid</label>
-						<p>{this.state.profile.wsdcid}</p>
-					</div>
-					<div className="profile-area__item">
-						<label className="label">Location</label>
-						<p>{this.state.profile.location}</p>
-					</div>
-					<div className="profile-area__item">
-						<label className="label">Facebook Id</label>
-						<p>{this.state.profile.facebookId}</p>
-					</div>
-				</section>
+						)}
+					/>
+				</Switch>
 			);
 		return (
 			<main className="page-container">
@@ -130,10 +144,19 @@ export class Profile extends Component {
 						Find a Partner
 					</a>
 					<ul className="page-control__navigation">
-						<li className="nav-item">Me</li>
-						<li className="nav-item">Partnerships</li>
-						<li className="nav-item">Events</li>
-						<li className="nav-item">Settings</li>
+						{navMenuData.map((menuItem, index) => (
+							<li
+								key={index}
+								className={classNames({
+									'nav-item': true,
+									active: menuItem.key === this.state.area,
+								})}
+							>
+								<Link to={this.buildNavUrl(menuItem.key)}>
+									{menuItem.label}
+								</Link>
+							</li>
+						))}
 					</ul>
 				</nav>
 				<RenderLoading loading={this.state.loading} />

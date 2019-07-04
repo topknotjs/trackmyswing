@@ -1,7 +1,7 @@
-//Add error logging
+// TODO: Add error logging
+// TODO: Make the constructor parse what's coming from the database and a separate method for parsing wsdc crap
 class Event {
 	constructor(data) {
-		//console.log(data);
 		this.EventId = null;
 		this.EventName = null;
 		this.SingleDay = false;

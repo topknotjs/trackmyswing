@@ -50,14 +50,14 @@ let processDancerValues = results => {
 					while (!ci.hasOwnProperty('value')) {
 						ci = dancerSet[i++];
 					}
-					promises.push(wsdc.GetDancer(ci.value));
+					promises.push(wsdc.getDancer(ci.value));
 				}
 				Promise.all(promises)
 					.then(results => {
 						results.forEach(result => {
 							if (
 								!result.hasOwnProperty('dancer') ||
-								!result.dancer.hasOwnProperty('wsdcid')
+								!result.dancer.hasOwnProperty('wscid')
 							)
 								return;
 							let dancer = new dancerDef();
@@ -71,10 +71,7 @@ let processDancerValues = results => {
 									dancer.WSDCID
 								} => ${JSON.stringify(dancer)}`
 							);
-							fireDB.WriteDancerToFirebase(
-								dancer.WSDCID,
-								dancer.toJSON()
-							);
+							fireDB.writeDancerToFirebase(dancer);
 						});
 						resolve('done');
 					})

@@ -1,9 +1,11 @@
 const bcrypt = require('bcrypt');
 
 // TODO: Add error logging
-// TODO: Change wsdcid to wsdcid
+// TODO: Make the constructor parse what's coming from the database and a separate method for parsing wsdc crap
+
 class Account {
 	constructor(data) {
+		const dancer = null;
 		this.AccountId = '';
 		this.Username = '';
 		this.Email = '';
@@ -11,6 +13,7 @@ class Account {
 		this.LastName = '';
 		this.ProfileImageUrl = '';
 		this.Wsdcid = null;
+		this.WsdcDancer = null;
 		this.FacebookId = null;
 		this.Location = '';
 		this.Password = '';
@@ -20,7 +23,8 @@ class Account {
 		if (!Account.ValidateAccount(data)) {
 			return;
 		}
-		this.ProcessAccount(data);
+		this.processAccount(data);
+		this.processDancer(dancer);
 	}
 	toJSON(full = false) {
 		const base = {
@@ -48,7 +52,7 @@ class Account {
 	getError() {
 		return this._error;
 	}
-	ProcessAccount(data) {
+	processAccount(data) {
 		this.AccountId = data.hasOwnProperty('accountId') ? data.accountId : '';
 		this.Username = data.hasOwnProperty('username') ? data.username : '';
 		this.Email = data.hasOwnProperty('email') ? data.email : '';
@@ -68,6 +72,9 @@ class Account {
 		if (this.Email === '') {
 			this.setError('No email on account.');
 		}
+	}
+	processDancer(dancer) {
+		this.WsdcDancer = dancer;
 	}
 	hasError() {
 		return this._error;

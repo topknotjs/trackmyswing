@@ -1,5 +1,5 @@
 const LoggerService = require('../handlers/logger');
-
+const Placement = require('./Placement');
 const logger = new LoggerService();
 const PLACEMENTS_KEY = 'West Coast Swing';
 const DEFAULT_RELEVENCE = 5;
@@ -28,24 +28,33 @@ const DIVISION_MAP = {
 	Newcomer: { Key: 'newcomer', MaxPoints: 1, PreviousDivision: null },
 };
 
+const getDivisionName = division => {
+	if (!division.name || !DIVISION_MAP.hasOwnProperty(division.name)) {
+		return null;
+	}
+	return DIVISION_MAP[division.name].Key;
+};
+
 class Dancer {
 	constructor(config) {
 		if (!config) return;
-		this.FirstName = config.FirstName;
-		this.LastName = config.LastName;
+		this.FirstName = config.firstName;
+		this.LastName = config.lastName;
 		// TODO: Remove this! Make sure that we are getting the correct value
-		this.WSDCID = !config.WSDCID ? config.WSCID : config.WSDCID;
-		this.CurrentPoints = config.CurrentPoints;
-		this.Division = config.Division;
-		this.Role = config.Role;
+		this.WSDCID = config.wsdcid;
+		this.CurrentPoints = config.currentPoints;
+		this.Division = config.division;
+		this.Record = {};
+		this.Role = config.role;
 		this.Relevance =
-			config.Relevance === undefined
+			config.relevance === undefined
 				? DEFAULT_RELEVENCE
-				: config.Relevance;
-		this.QualifiesForNextDivision = config.QualifiesForNextDivision;
-		this.DivisionRoleQualifies = `${this.Division}-${this.Role}${
-			this.QualifiesForNextDivision ? '-q' : ''
+				: config.relevance;
+		this.QualifiesForNextDivision = config.qualifiesForNextDivision;
+		this.DivisionRoleQualifies = `${this.division}-${this.role}${
+			this.qualifiesForNextDivision ? '-q' : ''
 		}`;
+		this.processFBRecord(config.record);
 	}
 	LoadWSDC(config) {
 		if (!config) return;
@@ -64,7 +73,7 @@ class Dancer {
 		this.DivisionRoleQualifies = null;
 		this.Error = false;
 		if (config.placements.hasOwnProperty(PLACEMENTS_KEY)) {
-			this.GetDivision(config.placements[PLACEMENTS_KEY]);
+			this.processWsdcDivisions(config.placements[PLACEMENTS_KEY]);
 		} else {
 			this.Error = 'No west coast swing points.';
 			logger.log(`Dancer ${this.WSDCID} error => ${this.Error}`);
@@ -81,11 +90,55 @@ class Dancer {
 			relevance: this.Relevance,
 			qualifiesForNextDivision: this.QualifiesForNextDivision,
 			divisionRoleQualifies: this.DivisionRoleQualifies,
+			record: Object.keys(this.Record).reduce((acc, key) => {
+				acc[key] = this.Record[key].reduce((acc, placement) => {
+					acc.push(placement.toJSON());
+					return acc;
+				}, []);
+				return acc;
+			}, {}),
 		};
 	}
-	GetDivision(danceTypePlacements) {
+	processFBRecord(record) {
+		const recordList = {};
+		for (let key in record) {
+			recordList[key] = record[key].reduce((acc, pl) => {
+				acc.push(new Placement(pl));
+				return acc;
+			}, []);
+		}
+		this.Record = recordList;
+	}
+	processWsdcDivisions(danceTypePlacements) {
 		// Sanity check the data
 		if (!danceTypePlacements) return;
+		this.getCurrentDancerData(danceTypePlacements);
+		this.getDivisionData(danceTypePlacements);
+	}
+	getDivisionData(danceTypePlacements) {
+		const divisions = {};
+		for (let key in danceTypePlacements) {
+			if (!danceTypePlacements.hasOwnProperty(key)) {
+				continue;
+			}
+			if (!danceTypePlacements[key].hasOwnProperty('division')) {
+				continue;
+			}
+
+			const divisionName = getDivisionName(
+				danceTypePlacements[key]['division']
+			);
+			const placements = danceTypePlacements[key]['competitions'];
+			divisions[divisionName] = [];
+			for (let i = 0, len = placements.length; i < len; i++) {
+				let pl = new Placement();
+				pl.processWSDC(placements[i]);
+				divisions[divisionName].push(pl);
+			}
+		}
+		this.Record = divisions;
+	}
+	getCurrentDancerData(danceTypePlacements) {
 		let placements = Object.values(danceTypePlacements);
 		if (!Array.isArray(placements) || !placements.length) return;
 		let currentIndex = 0;
@@ -117,6 +170,7 @@ class Dancer {
 		}
 
 		// Determine Division, Role, Qualifies
+		// TODO: Fix qualifiesfornextdivision
 		if (DIVISION_MAP.hasOwnProperty(divisionConfig.division.name)) {
 			let identifiedDivision = DIVISION_MAP[divisionConfig.division.name];
 			this.Division = identifiedDivision.Key;

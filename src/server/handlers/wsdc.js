@@ -28,7 +28,7 @@ class WSDC {
 		});
 		return dPromise;
 	}
-	async GetDancer(wsdcid) {
+	async getDancer(wsdcid) {
 		return new Promise((resolve, reject) => {
 			axios
 				.post(this.DancerUrl, { q: DancerDef.SanitizeWsdcid(wsdcid) })
