@@ -1,0 +1,14 @@
+.events-area {
+	display: block;
+	margin: 0 auto;
+}
+.events-item {
+	&__header {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		p {
+			margin-right: 1rem;
+		}
+	}
+}

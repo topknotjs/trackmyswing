@@ -43,7 +43,7 @@ class WSDC {
 				});
 		});
 	}
-	GetEvents() {
+	getEventsOld() {
 		return new Promise((resolve, reject) => {
 			let postData = querystring.stringify({
 				date_range: 12,
@@ -69,7 +69,9 @@ class WSDC {
 					data = Event.SanitizeRaw(data);
 					let parsedData = CircularJson.parse(data);
 					for (let i = 0, len = parsedData.length; i < len; i++) {
-						eventList.push(new Event(parsedData[i]));
+						const event = new Event();
+						event.processWsdcExportData(parsedData[i]);
+						eventList.push(event);
 					}
 					resolve(eventList);
 				});
@@ -78,6 +80,41 @@ class WSDC {
 				console.log('error: ', e);
 			});
 			req.write(postData);
+			req.end();
+		});
+	}
+	getEvents() {
+		return new Promise((resolve, reject) => {
+			const options = {
+				hostname: 'www.worldsdc.com',
+				port: 443,
+				path: '/event-calendar/',
+				method: 'POST',
+			};
+			let req = https.request(options, res => {
+				let data = '';
+				res.on('data', d => {
+					data += d;
+				});
+				res.on('end', () => {
+					let eventList = [];
+					const regex = /events: (\[[^\n]+)\n/;
+					let parsed = {};
+					const rMatch = data.replace(regex, (match, $1) => {
+						parsed = $1.trim().substring(0, $1.length - 1);
+						parsed = JSON.parse(parsed);
+					});
+					for (let i = 0, len = parsed.length; i < len; i++) {
+						const event = new Event();
+						event.processParsedCalendarData(parsed[i]);
+						eventList.push(event);
+					}
+					resolve(eventList);
+				});
+			});
+			req.on('error', e => {
+				console.log('error: ', e);
+			});
 			req.end();
 		});
 	}

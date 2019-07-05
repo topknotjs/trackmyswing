@@ -27,6 +27,30 @@ router.post('/attend/:event_id/:account_id', async function(req, res) {
 	}
 });
 
+router.post('/partner/:event_id/:account_id', async function(req, res) {
+	try {
+		let response = null;
+		if (req.body.partnerName) {
+			response = await accountService.writePartnershipNameToAccount(
+				req.params.event_id,
+				req.params.account_id,
+				req.body.partnerName
+			);
+		} else if (req.body.partnerWsdcid) {
+			response = await accountService.writePartnershipWsdcidToAccount(
+				req.params.event_id,
+				req.params.account_id,
+				req.body.partnerWsdcid
+			);
+		} else {
+		}
+
+		res.sendStatus(HttpResponse.Success);
+	} catch (error) {
+		res.status(HttpResponse.Conflict).send(error.toString());
+	}
+});
+
 router.post('/logout', function(req, res) {
 	res.clearCookie('x-account');
 	res.sendStatus(HttpResponse.Success);

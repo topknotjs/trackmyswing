@@ -104,4 +104,15 @@ export default class API {
 				});
 		});
 	}
+	GetEvents() {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/events/`, 'GET')
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
 }

@@ -2,39 +2,66 @@
 // TODO: Make the constructor parse what's coming from the database and a separate method for parsing wsdc crap
 class Event {
 	constructor(data) {
-		this.EventId = null;
-		this.EventName = null;
-		this.SingleDay = false;
-		this.StartDate = null;
-		this.EndDate = null;
-		this.HotelAddress = null;
-		this.HotelUrl = null;
-		this.ContactName = null;
-		this.ContactNumber = null;
-		this.ContactEmail = null;
+		this.eventId = '';
+		this.eventName = '';
+		this.singleDay = false;
+		this.startDate = null;
+		this.endDate = null;
+		this.hotelAddress = '';
+		this.hotelUrl = '';
+		this.eventUrl = '';
+		this.contactName = '';
+		this.contactNumber = '';
+		this.contactEmail = '';
 		if (!data) return;
+	}
+	processWsdcExportData(data) {
 		this.processEventName(data.event_name);
 		this.processContact(data.contact);
-		this.processName(data.event_name);
 		this.processDate(data.date);
 		this.processLocation(data.location);
 		this.processContact(data.contact);
 		this.processEventId();
 	}
+	processParsedCalendarData(data) {
+		this.processEventName(data.title);
+		this.startDate = new Date(data.start);
+		this.endDate = new Date(data.end);
+		this.eventUrl = data.url;
+	}
 	processFBData(data) {
-		this.EventId = data.eventId;
-		this.EventName = data.eventName;
-		this.SingleDay = data.singleDay;
-		this.StartDate = new Date(data.startDate);
-		this.EndDate = new Date(data.endDate);
-		this.HotelAddress = data.hotelAddress;
-		this.HotelUrl = data.hotelUrl;
-		this.ContactName = data.contactName;
-		this.ContactNumber = data.contactNumber;
-		this.ContactEmail = data.contactEmail;
+		this.eventId = data.eventId;
+		this.eventName = data.eventName;
+		this.singleDay = data.singleDay;
+		this.startDate = new Date(data.startDate);
+		this.endDate = new Date(data.endDate);
+		this.hotelAddress = data.hotelAddress;
+		this.hotelUrl = data.hotelUrl;
+		this.eventUrl = data.eventUrl;
+		this.contactName = data.contactName;
+		this.contactNumber = data.contactNumber;
+		this.contactEmail = data.contactEmail;
 	}
 	processEventName(text) {
-		this.EvenName = text.trim();
+		const possibleSuffix = [
+			'Registry',
+			'Member',
+			'Trial',
+			'Multi',
+			'Training',
+		];
+		text = text.replace(/\s\s+/g, ' ').trim();
+		for (let i = 0, len = possibleSuffix.length; i < len; i++) {
+			const fullSuffix = ` - ${possibleSuffix[i]}`;
+			if (text.indexOf(fullSuffix) !== -1) {
+				text = text.substring(0, text.indexOf(fullSuffix));
+			}
+		}
+		if (text.match(/\s-\s*$/)) {
+			this.eventName = text.replace(/\s-\s*$/, '');
+		} else {
+			this.eventName = text.trim();
+		}
 	}
 	processContact(text) {
 		let matched = false;
@@ -42,9 +69,9 @@ class Event {
 			/^([^0-9\+]*)(.*)<a.*>(.*)<\//,
 			(match, $1, $2, $3, offset, original) => {
 				matched = true;
-				this.ContactName = Event.SanitizeData($1);
-				this.ContactNumber = Event.SanitizeData($2.trim());
-				this.ContactEmail = Event.SanitizeData($3.trim());
+				this.contactName = Event.SanitizeData($1);
+				this.contactNumber = Event.SanitizeData($2.trim());
+				this.contactEmail = Event.SanitizeData($3.trim());
 			}
 		);
 		if (!matched) {
@@ -53,14 +80,11 @@ class Event {
 	}
 	processLocation(text) {
 		text.replace(/^(.*)<a/, (match, $1, offset, original) => {
-			this.HotelAddress = Event.SanitizeData($1);
+			this.hotelAddress = Event.SanitizeData($1);
 		});
 		text.replace(/^.*href=\'(.*)\'/, (match, $1, $offset, original) => {
-			this.HotelUrl = Event.SanitizeData($1);
+			this.hotelUrl = Event.SanitizeData($1);
 		});
-	}
-	processName(text) {
-		this.EventName = text.replace(/\s\s+/g, ' ').trim();
 	}
 	processDate(text) {
 		let regexMatch = null,
@@ -90,35 +114,36 @@ class Event {
 				/([A-Za-z]+) ([0-9]+), ([0-9]{4})/,
 				(match, $1, $2, $3, offset, original) => {
 					startDate = endDate = new Date(`${1} ${2}, ${3}`);
-					this.SingleDay = true;
+					this.singleDay = true;
 				}
 			);
 		}
-		this.StartDate = startDate;
-		this.EndDate = endDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 	processEventId() {
-		this.EventId = this.getKey();
+		this.eventId = this.getKey();
 	}
 	getKey() {
 		return (
-			this.StartDate.getFullYear() +
+			this.startDate.getFullYear() +
 			'-' +
-			this.EventName.toLowerCase().replace(/[^a-z]/g, '')
+			this.eventName.toLowerCase().replace(/[\.\#\$\[\]\s]/g, '')
 		);
 	}
 	toJSON() {
 		return {
-			eventId: this.EventId,
-			eventName: this.EventName,
-			singleDay: this.SingleDay,
-			startDate: this.StartDate.toLocaleDateString('en-US'),
-			endDate: this.EndDate.toLocaleDateString('en-US'),
-			hotelAddress: this.HotelAddress,
-			hotelUrl: this.HotelUrl,
-			contactName: this.ContactName,
-			contactNumber: this.ContactNumber,
-			contactEmail: this.ContactEmail,
+			eventId: this.eventId,
+			eventName: this.eventName,
+			singleDay: this.singleDay,
+			startDate: this.startDate.toLocaleDateString('en-US'),
+			endDate: this.endDate.toLocaleDateString('en-US'),
+			hotelAddress: this.hotelAddress,
+			hotelUrl: this.hotelUrl,
+			eventUrl: this.eventUrl,
+			contactName: this.contactName,
+			contactNumber: this.contactNumber,
+			contactEmail: this.contactEmail,
 		};
 	}
 	static SanitizeRaw(text) {

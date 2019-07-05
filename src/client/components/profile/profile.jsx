@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { Me } from './me/me.jsx';
+import { Events } from './events/events.jsx';
 import classNames from 'classnames';
 import API from '../../libs/api.jsx';
 
@@ -36,7 +37,7 @@ const navMenuData = [
 		key: 'events',
 		label: 'Events',
 		component: function(props) {
-			return <p>Events</p>;
+			return <Events attendances={this.state.profile.attendances} />;
 		},
 	},
 	{

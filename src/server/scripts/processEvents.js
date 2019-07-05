@@ -6,13 +6,11 @@ let fireDB = fDB();
 let finish = () => {
 	process.exit('Finished!');
 };
-wsdc.GetEvents()
+wsdc.getEvents()
 	.then(results => {
 		let promises = [];
 		results.forEach((event, index) => {
-			promises.push(
-				fireDB.writeEventToFirebase(event.getKey(), event.toJSON())
-			);
+			promises.push(fireDB.writeEventToFirebase(event.getKey(), event));
 		});
 		return Promise.all(promises);
 	})

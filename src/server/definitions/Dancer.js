@@ -51,9 +51,7 @@ class Dancer {
 				? DEFAULT_RELEVENCE
 				: config.relevance;
 		this.QualifiesForNextDivision = config.qualifiesForNextDivision;
-		this.DivisionRoleQualifies = `${this.division}-${this.role}${
-			this.qualifiesForNextDivision ? '-q' : ''
-		}`;
+		this.DivisionRoleQualifies = config.divisionRoleQualifies;
 		this.processFBRecord(config.record);
 	}
 	LoadWSDC(config) {
@@ -140,7 +138,9 @@ class Dancer {
 	}
 	getCurrentDancerData(danceTypePlacements) {
 		let placements = Object.values(danceTypePlacements);
-		if (!Array.isArray(placements) || !placements.length) return;
+		if (!Array.isArray(placements) || !placements.length) {
+			return;
+		}
 		let currentIndex = 0;
 		let yearCoefficient = 1000 * 60 * 60 * 24 * 360;
 		let divisionConfig = placements[currentIndex];

@@ -136,7 +136,13 @@ class DB {
 	 */
 	writeEventToFirebase(eventkey, event) {
 		return new Promise((resolve, reject) => {
-			this.Con.ref('events/' + eventkey).set(event, () => resolve());
+			this.Con.ref('events/' + eventkey).set(
+				{
+					...event.toJSON(),
+					eventId: eventkey,
+				},
+				() => resolve()
+			);
 		});
 	}
 	writeAccountToFirebase(account) {
@@ -159,14 +165,11 @@ class DB {
 		});
 	}
 	// TODO: Error handle when id does not exist
-	updateAccountInFirebase(id, data) {
+	updateAccountInFirebase(id, account) {
 		// TODO: Consider creating a method of validating account data other than creating an account object
 		return new Promise((resolve, reject) => {
-			if (!Account.ValidateAccount(data)) {
-				reject('Invalid account data');
-				return;
-			}
-			const accountUpdateData = new Account(data).toJSON();
+			// TODO: Turn this into a basic checker of errors
+			const accountUpdateData = account.toJSON();
 			let updatedAccount = null;
 			// TODO: Move this logic into the account service rather than doing it all in the firebase handler
 			this.getAccountById(id)
@@ -222,15 +225,16 @@ class DB {
 				.then(snapshot => {
 					const accountData = snapshot.val();
 					if (!accountData) {
-						reject(`Account ${id} not found`);
-						return;
+						console.log(`Account ${id} not found`);
+						resolve(null);
+					} else {
+						resolve(
+							new Account({
+								...accountData,
+								accountId: id,
+							})
+						);
 					}
-					resolve(
-						new Account({
-							...accountData,
-							accountId: id,
-						})
-					);
 				})
 				.catch(error => {
 					console.log(`Getting account ${id} error: ${error}`);
@@ -266,7 +270,6 @@ class DB {
 			const snapshot = await this.Con.ref('dancers/' + wsdcid).once(
 				'value'
 			);
-			console.log('Snapshot: ', snapshot.val());
 			return new Dancer(snapshot.val());
 		} catch (error) {
 			throw new Error(error);

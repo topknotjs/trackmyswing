@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-
+const Dancer = require('./Dancer');
+const Attendance = require('./Attendance');
 // TODO: Add error logging
 // TODO: Make the constructor parse what's coming from the database and a separate method for parsing wsdc crap
 
@@ -14,6 +15,7 @@ class Account {
 		this.ProfileImageUrl = '';
 		this.Wsdcid = null;
 		this.WsdcDancer = null;
+		this.Attendances = [];
 		this.FacebookId = null;
 		this.Location = '';
 		this.Password = '';
@@ -24,7 +26,6 @@ class Account {
 			return;
 		}
 		this.processAccount(data);
-		this.processDancer(dancer);
 	}
 	toJSON(full = false) {
 		const base = {
@@ -35,6 +36,12 @@ class Account {
 			lastName: this.LastName,
 			profileImageUrl: this.ProfileImageUrl,
 			wsdcid: this.Wsdcid,
+			wsdcDancer:
+				this.WsdcDancer === null ? null : this.WsdcDancer.toJSON(),
+			attendances: this.Attendances.reduce((acc, attendance) => {
+				acc.push(attendance.toJSON());
+				return acc;
+			}, []),
 			facebookId: this.FacebookId,
 			location: this.Location,
 		};
@@ -46,7 +53,6 @@ class Account {
 			: base;
 	}
 	setError(msg) {
-		console.log('Account error message: ', msg);
 		this._error = msg;
 	}
 	getError() {
@@ -62,6 +68,9 @@ class Account {
 			? data.profileImageUrl
 			: '';
 		this.Wsdcid = data.hasOwnProperty('wsdcid') ? data.wsdcid : '';
+		this.WsdcDancer = data.hasOwnProperty('wsdcDancer')
+			? new Dancer(data.wsdcDancer)
+			: null;
 		this.FacebookId = data.hasOwnProperty('facebookId')
 			? data.facebookId
 			: '';
@@ -72,10 +81,52 @@ class Account {
 		if (this.Email === '') {
 			this.setError('No email on account.');
 		}
+
+		if (data.hasOwnProperty('attendances')) {
+			for (let key in data.attendances) {
+				this.Attendances.push(new Attendance(data.attendances[key]));
+			}
+		}
 	}
+	// TODO: Include some more processing, maybe wsdcId checking here
 	processDancer(dancer) {
 		this.WsdcDancer = dancer;
 	}
+	addAttendance(attendance) {
+		// TODO: Insert attendance in order?
+		for (let i = 0, len = this.Attendances.length; i < len; i++) {
+			if (
+				this.Attendances[i].event.eventId === attendance.event.eventId
+			) {
+				this.setError(
+					`${attendance.event.eventId} already exists for account`
+				);
+				return false;
+			}
+		}
+		this.Attendances.push(attendance);
+		return true;
+	}
+	setAttendance(attendance) {
+		for (let i = 0, len = this.Attendances.length; i < len; i++) {
+			if (
+				this.Attendances[i].event.eventId === attendance.event.eventId
+			) {
+				this.Attendances[i] = attendance;
+				return;
+			}
+		}
+		this.Attendances.push(attendance);
+	}
+	getAttendance(eventId) {
+		for (let i = 0, len = this.Attendances.length; i < len; i++) {
+			if (this.Attendances[i].event.eventId === eventId) {
+				return this.Attendances[i];
+			}
+		}
+		return null;
+	}
+	addUnassignedPartnership() {}
 	hasError() {
 		return this._error;
 	}

@@ -19,6 +19,8 @@ const ROLES = [
 	{ Key: 'follower', Label: 'Follower' },
 ];
 const ApiService = new API();
+
+// TODO: Check to see if email/login exists before logging in
 export class Create extends Component {
 	constructor(props) {
 		super(props);

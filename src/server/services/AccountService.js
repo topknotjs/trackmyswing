@@ -1,12 +1,91 @@
 const fDB = require('../handlers/fireDB');
 const sanitizeEmail = require('../utils/sanitizeEmail');
 const Account = require('../definitions/Account');
+const Attendance = require('../definitions/Attendance');
 class AccountServices {
 	constructor() {
 		this.fireDB = fDB();
 	}
 	async writeAttendanceToEvent(eventId, accountId) {
 		try {
+			const account = await this.fireDB.getAccountById(accountId);
+			const event = await this.fireDB.getEvent(eventId);
+			const currAttendance = account.getAttendance(event.eventId);
+			if (currAttendance !== null) {
+				throw new Error(
+					`Account ${accountId} already attending event ${eventId}`
+				);
+			}
+			const attendance = new Attendance({ event });
+			const addResult = account.addAttendance(attendance);
+			if (!addResult) {
+				throw new Error(account.getError());
+			}
+			return await this.fireDB.updateAccountInFirebase(
+				accountId,
+				account
+			);
+		} catch (error) {
+			console.log('Error: ', error);
+			throw new Error(error);
+		}
+	}
+
+	async writePartnershipNameToAccount(eventId, accountId, partnerName) {
+		try {
+			const account = await this.fireDB.getAccountById(accountId);
+			let attendance = account.getAttendance(eventId);
+			if (!attendance) {
+				const event = await this.fireDB.getEvent(eventId);
+				attendance = new Attendance({ event });
+				const addResult = account.addAttendance(attendance);
+				if (!addResult) {
+					throw new Error(account.getError());
+				}
+			} else {
+				attendance.addPartnerName(partnerName);
+				account.setAttendance(attendance);
+			}
+			return await this.fireDB.updateAccountInFirebase(
+				accountId,
+				account
+			);
+		} catch (error) {
+			console.log('Error: ', error);
+			throw new Error(error);
+		}
+	}
+	async writePartnershipWsdcidToAccount(eventId, accountId, wsdcid) {
+		try {
+			const account = await this.fireDB.getAccountById(accountId);
+			let attendance = account.getAttendance(eventId);
+			if (!attendance) {
+				const event = await this.fireDB.getEvent(eventId);
+				attendance = new Attendance({ event });
+				const addResult = account.addAttendance(attendance);
+				if (!addResult) {
+					throw new Error(account.getError());
+				}
+			} else {
+				const dancer = await this.fireDB.getDancer(wsdcid);
+				attendance.addPartnerDancer(dancer);
+				account.setAttendance(attendance);
+			}
+
+			return await this.fireDB.updateAccountInFirebase(
+				accountId,
+				account
+			);
+		} catch (error) {
+			console.log('Error: ', error);
+			throw new Error(error);
+		}
+	}
+
+	async writePartnerToAttendance(eventId, accountId) {
+		try {
+			const account = this.fireDB.getAccountById(accountId);
+			const event = this.fireDB.getEvent(eventId);
 			return await this.fireDB.writeAccountToEvent(eventId, accountId);
 		} catch (error) {
 			console.log('Error: ', error);
@@ -50,15 +129,28 @@ class AccountServices {
 		}
 
 		try {
-			const dupAccount = await this.fireDB.getAccountByEmail(
-				account.Email
-			);
-			if (dupAccount instanceof Account) {
-				return await this.fireDB.updateAccountInFirebase(
-					dupAccount.AccountId,
-					accountData
+			// TODO: Make this not be a full "get the entire duplicat account". we don't need the whole thing here
+			let dupAccount = null;
+			if (account.AccountId) {
+				dupAccount = await this.fireDB.getAccountById(
+					account.AccountId
 				);
 			} else {
+				dupAccount = await this.fireDB.getAccountByEmail(account.Email);
+			}
+
+			if (dupAccount instanceof Account) {
+				if (account.Wsdcid !== dupAccount.Wsdcid) {
+					const dancer = await this.fireDB.getDancer(account.Wsdcid);
+					account.processDancer(dancer);
+				}
+				return await this.fireDB.updateAccountInFirebase(
+					dupAccount.AccountId,
+					account
+				);
+			} else {
+				const dancer = await this.fireDB.getDancer(account.Wsdcid);
+				account.processDancer(dancer);
 				const accountId = await this.fireDB.writeAccountToFirebase(
 					account
 				);
@@ -69,14 +161,16 @@ class AccountServices {
 			throw new Error(error);
 		}
 	}
+	// TODO: update this
 	async updateAccount(id, accountData) {
 		if (!id && !accountData) {
 			throw new Error('Missing accountId or email');
 		}
 		try {
+			console.log('Update account');
 			return await this.fireDB.updateAccountInFirebase(id, accountData);
 		} catch (error) {
-			console.log('upsert error: ', error);
+			console.log('update error: ', error);
 			throw new Error(error);
 		}
 	}

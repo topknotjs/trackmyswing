@@ -49,8 +49,11 @@ export class Me extends Component {
 					<p>{this.state.profile.wsdcid}</p>
 				</div>
 				<div className="profile-area__item">
-					<p>{this.state.profile.division}</p>
-					<p>{this.state.profile.points}</p>
+					<p>{this.state.profile.wsdcDancer.division}</p>
+					<p>{this.state.profile.wsdcDancer.currentPoints}</p>
+				</div>
+				<div className="profile-area__item">
+					<p>Locations area</p>
 				</div>
 			</section>
 		);

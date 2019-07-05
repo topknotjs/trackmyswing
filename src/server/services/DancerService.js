@@ -12,7 +12,6 @@ class DancerService {
 	async getDancer(wsdcid) {
 		try {
 			const dancer = await this.fireDB.getDancer(wsdcid);
-			console.log('DancerService: ', dancer);
 			logger.info(`Found dancer ${wsdcid}`);
 			return dancer;
 		} catch (error) {
