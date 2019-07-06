@@ -115,4 +115,15 @@ export default class API {
 				});
 		});
 	}
+	attendEvent(eventId, accountId) {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/account/attend/${eventId}/${accountId}`, 'POST')
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
 }

@@ -1,11 +1,11 @@
 export default class Dancer {
 	constructor(data) {
-		this.FirstName = data.FirstName;
-		this.LastName = data.LastName;
-		this.WSDCID = data.WSDCID;
-		this.CurrentPoints = data.CurrentPoints;
-		this.Division = data.Division;
-		this.Role = data.Role;
-		this.QualifiesforNextDivision = data.QualifiesforNextDivision;
+		this.firstName = data.firstName;
+		this.lastName = data.lastName;
+		this.wsdcid = data.wsdcid;
+		this.currentPoints = data.currentPoints;
+		this.division = data.division;
+		this.role = data.role;
+		this.qualifiesforNextDivision = data.qualifiesforNextDivision;
 	}
 }

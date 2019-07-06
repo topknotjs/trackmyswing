@@ -37,7 +37,12 @@ const navMenuData = [
 		key: 'events',
 		label: 'Events',
 		component: function(props) {
-			return <Events attendances={this.state.profile.attendances} />;
+			return (
+				<Events
+					attendances={this.state.profile.attendances}
+					accountId={this.state.profile.accountId}
+				/>
+			);
 		},
 	},
 	{
@@ -89,7 +94,8 @@ export class Profile extends Component {
 				});
 			})
 			.catch(error => {
-				this.props.history.push('/login');
+				console.log('Error getting account: ', error);
+				// this.props.history.push('/login');
 			});
 		// Figure out what to do with this data and how to use it.
 		// FacebookApi.FetchUser();

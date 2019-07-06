@@ -1,7 +1,10 @@
 const Dancer = require('./Dancer');
+const Event = require('./Event');
 class Attendance {
 	constructor(data) {
-		this.event = data.hasOwnProperty('event') ? data.event : null;
+		this.event = data.hasOwnProperty('event')
+			? new Event(data.event)
+			: null;
 		this.partnerName = data.hasOwnProperty('partnerName')
 			? data.partnerName
 			: '';
@@ -12,7 +15,7 @@ class Attendance {
 	}
 	toJSON() {
 		return {
-			event: this.event,
+			event: this.event === null ? null : this.event.toJSON(),
 			partnerName: this.partnerName,
 			partnerDancer:
 				this.partnerDancer === null

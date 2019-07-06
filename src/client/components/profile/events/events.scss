@@ -1,8 +1,21 @@
 .events-area {
 	display: block;
 	margin: 0 auto;
+
+	&-header {
+		text-align: center;
+	}
 }
 .events-item {
+	display: flex;
+	flex-direction: row;
+
+	.events-item-primary-action {
+		width: 10%;
+		button {
+			width: 100%;
+		}
+	}
 	&__header {
 		width: 100%;
 		display: flex;

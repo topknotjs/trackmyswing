@@ -14,6 +14,7 @@ class Event {
 		this.contactNumber = '';
 		this.contactEmail = '';
 		if (!data) return;
+		this.processFBData(data);
 	}
 	processWsdcExportData(data) {
 		this.processEventName(data.event_name);
