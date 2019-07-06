@@ -89,7 +89,7 @@ export class Home extends Component {
 			<main className="strictly-container">
 				<section className="search-container">
 					<header className="container-header">
-						<h1>Find my Strictly</h1>
+						<h1>Anchor Step</h1>
 					</header>
 					<section className="container-body">
 						<div className="form-container">
