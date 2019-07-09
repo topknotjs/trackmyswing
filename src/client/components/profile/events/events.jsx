@@ -109,15 +109,15 @@ export class Events extends Component {
 				console.log('Error attending event: ', error);
 			});
 	}
-	unAttendEvent(event) {
+	unattendEvent(event) {
 		this.api
-			.attendEvent(event.eventId, this.props.accountId)
+			.unattendEvent(event.eventId, this.props.accountId)
 			.then(resultEvent => {
 				console.log('result: ', resultEvent);
 				this.setState({
 					events: this.state.events.map(mEvent => {
 						if (mEvent.eventId === event.eventId) {
-							mEvent.attending = true;
+							mEvent.attending = false;
 						}
 						return mEvent;
 					}),
@@ -131,7 +131,7 @@ export class Events extends Component {
 		this.attendEvent(event);
 	}
 	unAttendEventClicked(event) {
-		console.log('Unattend clicked event: ', event);
+		this.unattendEvent(event);
 	}
 	render() {
 		return (
@@ -196,6 +196,29 @@ export class Events extends Component {
 											<p>{event.hotelAddress}</p>
 											{event.attending ? (
 												<p>Attending</p>
+											) : (
+												''
+											)}
+											{event.partnerName ? (
+												<p>
+													Partner:{' '}
+													{`${event.partnerName}`}
+												</p>
+											) : (
+												''
+											)}
+											{event.partnerDancer ? (
+												<p>
+													Partner:{' '}
+													{
+														event.partnerDancer
+															.firstName
+													}{' '}
+													{
+														event.partnerDancer
+															.lastName
+													}
+												</p>
 											) : (
 												''
 											)}

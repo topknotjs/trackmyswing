@@ -8,9 +8,10 @@ class Attendance {
 		this.partnerName = data.hasOwnProperty('partnerName')
 			? data.partnerName
 			: '';
-		this.partnerDancer = data.hasOwnProperty('partnerDancer')
-			? new Dancer(data.partnerDancer)
-			: null;
+		// TODO: Come up with a better way to error check these fields rather than this inconsistent crap
+		this.partnerDancer = !data.partnerDancer
+			? null
+			: new Dancer(data.partnerDancer);
 		this.error = false;
 	}
 	toJSON() {

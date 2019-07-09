@@ -30,7 +30,29 @@ class AccountServices {
 			throw new Error(error);
 		}
 	}
+	async removeAttendanceFromEvent(eventId, accountId) {
+		try {
+			const account = await this.fireDB.getAccountById(accountId);
+			const currAttendance = account.getAttendance(eventId);
+			if (currAttendance === null) {
+				throw new Error(
+					`Event ID: ${eventId} does not exist for account id: ${accountId}`
+				);
+			}
+			const removeResult = account.removeAttendance(currAttendance);
 
+			if (!removeResult) {
+				throw new Error(account.getError());
+			}
+			return await this.fireDB.updateAccountInFirebase(
+				accountId,
+				account
+			);
+		} catch (error) {
+			console.log('Error: ', error);
+			throw new Error(error);
+		}
+	}
 	async writePartnershipNameToAccount(eventId, accountId, partnerName) {
 		try {
 			const account = await this.fireDB.getAccountById(accountId);

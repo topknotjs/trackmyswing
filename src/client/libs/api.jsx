@@ -126,4 +126,15 @@ export default class API {
 				});
 		});
 	}
+	unattendEvent(eventId, accountId) {
+		return new Promise((resolve, reject) => {
+			this.call(`/api/account/unattend/${eventId}/${accountId}`, 'POST')
+				.then(result => {
+					resolve(result.data);
+				})
+				.catch(error => {
+					reject(error);
+				});
+		});
+	}
 }

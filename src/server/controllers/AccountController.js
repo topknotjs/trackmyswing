@@ -17,11 +17,23 @@ const router = express.Router();
 
 router.post('/attend/:event_id/:account_id', async function(req, res) {
 	try {
-		const response = await accountService.writeAttendanceToEvent(
+		const account = await accountService.writeAttendanceToEvent(
 			req.params.event_id,
 			req.params.account_id
 		);
-		res.sendStatus(HttpResponse.Success);
+		res.send(account.toJSON());
+	} catch (error) {
+		res.status(HttpResponse.Conflict).send(error.toString());
+	}
+});
+
+router.post('/unattend/:event_id/:account_id', async function(req, res) {
+	try {
+		const account = await accountService.removeAttendanceFromEvent(
+			req.params.event_id,
+			req.params.account_id
+		);
+		res.send(account.toJSON());
 	} catch (error) {
 		res.status(HttpResponse.Conflict).send(error.toString());
 	}

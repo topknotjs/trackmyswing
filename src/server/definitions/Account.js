@@ -107,6 +107,19 @@ class Account {
 		this.Attendances.push(attendance);
 		return true;
 	}
+	removeAttendance(attendance) {
+		// TODO: Insert attendance in order?
+		const newAttendances = this.Attendances.filter(
+			(att, idx) => att.event.eventId !== attendance.event.eventId
+		);
+		if (this.Attendances.length !== newAttendances.length) {
+			this.Attendances = newAttendances;
+			return true;
+		} else {
+			this.setError(`${attendance.event.eventId} does not exist`);
+			return false;
+		}
+	}
 	setAttendance(attendance) {
 		for (let i = 0, len = this.Attendances.length; i < len; i++) {
 			if (
