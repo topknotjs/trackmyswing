@@ -16,7 +16,9 @@ export default class API {
   GetDancers(division, role, qualifies) {
     return new Promise((resolve, reject) => {
       this.call(
-        `/api/dancers/${division}/${role}${qualifies ? '?qualifies=true' : ''}`,
+        `/api/dancers/complete/${division}/${role}${
+          qualifies ? '?qualifies=true' : ''
+        }`,
         'GET'
       )
         .then(result => {
