@@ -3,106 +3,107 @@
 @import '../../shared/assets/styles/global';
 
 .search-container {
-	background: #ccc;
-	padding-bottom: 3rem;
+  background: #ccc;
+  padding-bottom: 3rem;
 }
 .container-header {
-	width: 100%;
-	text-align: center;
-	h1 {
-		margin-top: 0;
-		padding-top: 1rem;
-	}
+  width: 100%;
+  text-align: center;
+  h1 {
+    margin-top: 0;
+    padding-top: 1rem;
+  }
 }
 .container-body {
-	width: 100%;
-	min-width: 300px;
-	margin: 1rem auto;
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
+  width: 100%;
+  min-width: 300px;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 
-	@media only screen and (min-width: 40rem) {
-		width: 50%;
-	}
+  @media only screen and (min-width: 40rem) {
+    width: 50%;
+  }
 }
 .form-container {
-	padding: 1rem;
+  padding: 1rem;
 
-	.form-label {
-		text-align: center;
-		line-height: 3rem;
-		width: 100%;
-	}
+  .form-label {
+    text-align: center;
+    line-height: 3rem;
+    width: 100%;
+  }
 }
 .form-selector {
-	display: flex;
-	flex-direction: column;
-	padding: 1rem;
-	background: transparent;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid $app-gray-medium;
 
-	option {
-		background: transparent;
-	}
+  option {
+    background: transparent;
+  }
 
-	&__action {
-		flex: 1;
-		padding: 1rem 0;
-		border-radius: 0;
-		border-bottom: 1px solid #fff;
+  &__action {
+    flex: 1;
+    padding: 1rem 0;
+    border-radius: 0;
+    border-bottom: 1px solid #fff;
 
-		&:first-child {
-			border-top-left-radius: $bs-border-radius;
-			border-top-right-radius: $bs-border-radius;
-		}
+    &:first-child {
+      border-top-left-radius: $bs-border-radius;
+      border-top-right-radius: $bs-border-radius;
+    }
 
-		&:last-child {
-			border-bottom-left-radius: $bs-border-radius;
-			border-bottom-right-radius: $bs-border-radius;
-			border-bottom: none;
-		}
-	}
-	.active {
-		background: orange;
-	}
+    &:last-child {
+      border-bottom-left-radius: $bs-border-radius;
+      border-bottom-right-radius: $bs-border-radius;
+      border-bottom: none;
+    }
+  }
+  .active {
+    background: orange;
+  }
 }
 
 .form-submit {
-	display: block;
-	margin: 1rem 0;
+  display: block;
+  margin: 1rem 0;
 }
 .container-footer {
-	display: flex;
-	justify-content: center;
+  display: flex;
+  justify-content: center;
 }
-.create-account-link {
-	display: block;
-	margin: 0 auto;
-	border: 1px solid rgb(169, 169, 169);
-	background: transparent;
-	padding: 1rem;
+.account-link {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid $app-gray-medium;
+  background: transparent;
+  padding: 1rem;
 }
 
 .loading-container {
-	width: 100%;
-	text-align: center;
-	padding: 5rem 0;
+  width: 100%;
+  text-align: center;
+  padding: 5rem 0;
 
-	.loading {
-		width: 10rem;
-	}
+  .loading {
+    width: 10rem;
+  }
 }
 
 .dancer-list {
-	margin: 1rem;
+  margin: 1rem;
 
-	&-item {
-		display: block;
-		width: 100%;
-		padding: 1rem;
-		margin: 1rem 0;
-		background: rgba(86, 61, 124, 0.15);
-		border: 1px solid rgba(86, 61, 124, 0.2);
-		border-radius: 5px;
-	}
+  &-item {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: rgba(86, 61, 124, 0.15);
+    border: 1px solid rgba(86, 61, 124, 0.2);
+    border-radius: 5px;
+  }
 }
