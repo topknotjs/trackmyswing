@@ -133,7 +133,18 @@ router.post('/:id', async function(req, res) {
 router.post('/', async function(req, res) {
   try {
     const updatedAccount = await accountService.upsertAccount(req.body);
-    res.send(updatedAccount.toJSON());
+    if (updatedAccount.accountId) {
+      res.cookieHandler.checkOrSetCookie(
+        'x-account',
+        updatedAccount.email,
+        Date.now() + CookiesHandler.DefaultExpire
+      );
+      res.send(updatedAccount.toJSON());
+    } else {
+      res
+        .status(HttpResponse.InternalServerError)
+        .send('Error upserting account');
+    }
   } catch (error) {
     res.status(HttpResponse.InternalServerError).send(error);
   }

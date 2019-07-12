@@ -145,7 +145,6 @@ class AccountServices {
       } else {
         dupAccount = await this.fireDB.getAccountByEmail(account.email);
       }
-      console.log('Dup account: ', dupAccount);
       if (dupAccount instanceof Account) {
         if (account.wsdcId !== dupAccount.wsdcId) {
           const dancer = await this.fireDB.getDancer(account.wsdcId);
@@ -158,7 +157,6 @@ class AccountServices {
       } else {
         const dancer = await this.fireDB.getDancer(account.wsdcId);
         account.processDancer(dancer);
-        console.log('Processed account: ', account);
         const accountId = await this.fireDB.writeAccountToFirebase(account);
         return await this.fireDB.getAccountById(accountId);
       }
