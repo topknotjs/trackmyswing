@@ -103,7 +103,7 @@ router.get('/login', async function(req, res) {
         res.cookieHandler.getCookie('x-account')
       );
       // TODO: Convert account to camel cased fields
-      if (account.AccountId) {
+      if (account.accountId) {
         res.send(account.toJSON());
       } else {
         res.sendStatus(HttpResponse.NotFound);
@@ -111,15 +111,6 @@ router.get('/login', async function(req, res) {
     } catch (error) {
       res.sendStatus(HttpResponse.InternalServerError).send(error);
     }
-  }
-});
-
-router.post('/', async function(req, res) {
-  try {
-    const updatedAccount = await accountService.upsertAccount(req.body);
-    res.send(updatedAccount.toJSON());
-  } catch (error) {
-    res.status(HttpResponse.InternalServerError).send(error);
   }
 });
 
@@ -138,13 +129,23 @@ router.post('/:id', async function(req, res) {
     res.status(HttpResponse.InternalServerError).send(error);
   }
 });
+
+router.post('/', async function(req, res) {
+  try {
+    const updatedAccount = await accountService.upsertAccount(req.body);
+    res.send(updatedAccount.toJSON());
+  } catch (error) {
+    res.status(HttpResponse.InternalServerError).send(error);
+  }
+});
+
 router.get('/:id', async function(req, res) {
   // TODO: this belongs in the account getter
   let { id } = req.params;
   try {
     const account = await accountService.getAccountById(id);
 
-    if (account.AccountId) {
+    if (account.accountId) {
       res.send(account.toJSON());
     } else {
       res.sendStatus(HttpResponse.NotFound);
@@ -159,7 +160,7 @@ router.get('/', async function(req, res) {
 
   try {
     const account = await accountService.getAccountByEmail(email);
-    if (account.AccountId) {
+    if (account.accountId) {
       res.send(account.toJSON());
     } else {
       res.sendStatus(HttpResponse.NotFound);

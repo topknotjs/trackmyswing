@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 require('./dancerList.scss');
-
+const defaultProfileImage = require('../../shared/assets/images/profile-default.jpg');
 export default class DancerList extends Component {
   static propTypes = {
     dancers: PropTypes.array,
@@ -19,7 +19,14 @@ export default class DancerList extends Component {
           return (
             <li className='dancer-list-item' key={index}>
               <div className='dancer-list-item__part row-image'>
-                <img className='dancer-image' src='default' />
+                <img
+                  className='dancer-image'
+                  src={
+                    dancer.profileImageUrl
+                      ? dancer.profileImageUrl
+                      : defaultProfileImage
+                  }
+                />
               </div>
               <div className='dancer-list-item__part row-main'>
                 <p className='dancer-list-item__primary'>
@@ -37,7 +44,7 @@ export default class DancerList extends Component {
                 )}
               </div>
               <div className='dancer-list-item__part row-actions'>
-                <button>test</button>
+                <button>Request Partner</button>
               </div>
             </li>
           );

@@ -18,6 +18,11 @@
     .row-image {
       height: 10%;
       width: 10%;
+      padding-right: 1rem;
+      img {
+        display: block;
+        width: 100%;
+      }
     }
     .row-main {
       width: 60%;
