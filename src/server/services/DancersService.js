@@ -23,10 +23,10 @@ class DancersService {
       );
       const accountsAndDancers = accounts.splice(0);
       const dancerIdsInAccounts = accounts.reduce((acc, account) => {
-        acc.push(account.WsdcDancer.WSDCID);
+        acc.push(account.WsdcDancer.wsdcId);
       }, []);
       for (let i = 0, len = dancers.length; i < len; i++) {
-        if (dancerIdsInAccounts.indexOf(dancers[i].WSDCID) === -1) {
+        if (dancerIdsInAccounts.indexOf(dancers[i].wsdcId) === -1) {
           accountsAndDancers.push(dancers[i]);
         }
       }

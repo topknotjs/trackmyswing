@@ -62,7 +62,7 @@ class DB {
 
   async writeDancerToFirebase(dancer) {
     try {
-      this.Con.ref('dancers/' + dancer.WSDCID).set(dancer.toJSON());
+      this.Con.ref('dancers/' + dancer.wsdcId).set(dancer.toJSON());
     } catch (error) {
       throw new Error(error);
     }
@@ -357,13 +357,13 @@ class DB {
             dancersArray = [];
           for (let key in compMap) {
             const newDancer = new Dancer(compMap[key]);
-            if (newDancer.Relevance <= 2) {
+            if (newDancer.relevance <= 2) {
               dancersArray.push(newDancer);
             }
           }
           dancersArray.sort((a, b) => {
-            const la = a.LastName.toLowerCase(),
-              lb = b.LastName.toLowerCase();
+            const la = a.lastName.toLowerCase(),
+              lb = b.lastName.toLowerCase();
             if (la < lb) return -1;
             else if (la > lb) return 1;
             return 0;
