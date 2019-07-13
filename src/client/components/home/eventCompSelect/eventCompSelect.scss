@@ -1,0 +1,13 @@
+.event-comp-select {
+  width: 100%;
+  position: relative;
+  display: flex;
+  .header {
+    width: 100%;
+  }
+  .close-action {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+  }
+}

@@ -17,7 +17,12 @@ router.get('/complete/:division/:role', async function(req, res) {
       division,
       role
     );
-    res.send(dancers);
+    res.send(
+      dancers.reduce((acc, dancer) => {
+        acc.push(dancer.toJSON());
+        return acc;
+      }, [])
+    );
   } catch (error) {
     res.status(HttpResponse.InternalServerError).send(error);
   }

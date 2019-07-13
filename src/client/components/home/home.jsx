@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import API from './../../libs/api.jsx';
-import DancerList from '../dancerList/dancerList.jsx';
+import DancerList from './dancerList/dancerList.jsx';
+import EventCompSelect from './eventCompSelect/eventCompSelect.jsx';
 import className from 'classnames';
+import Dancer from '../../classes/Dancer.jsx';
 
 require('./home.scss');
 
@@ -36,8 +38,25 @@ export class Home extends Component {
       },
       searchPending: false,
       dancers: [],
+      selectedDancer: null,
     };
     this.api = new API();
+  }
+  componentDidMount() {
+    this.api
+      .getLogin()
+      .then(loggedInData => {
+        if (loggedInData.accountId) {
+          this.setState({ loggedIn: true, accountId: loggedInData.accountId });
+        } else {
+          this.setState({ loggedIn: false });
+        }
+      })
+      .catch(error => {});
+  }
+  selectDancer(dancer) {
+    this.setState({ selectedDancer: dancer });
+    // console.log('Dancer selected: ', dancer, this.state);
   }
   searchDancers() {
     let { division, role } = this.state.form;
@@ -45,7 +64,13 @@ export class Home extends Component {
     this.api
       .GetDancers(division, role, true)
       .then(results => {
-        this.setState({ dancers: results, searchPending: false });
+        this.setState({
+          dancers: results.reduce((acc, single) => {
+            acc.push(new Dancer(single));
+            return acc;
+          }, []),
+          searchPending: false,
+        });
       })
       .catch(error => {
         this.setState({ searchPending: false });
@@ -77,18 +102,7 @@ export class Home extends Component {
     if (!this.isSubmitAvailable()) return;
     this.searchDancers();
   }
-  componentDidMount() {
-    this.api
-      .getLogin()
-      .then(loggedInData => {
-        if (loggedInData.accountId) {
-          this.setState({ loggedIn: true, accountId: loggedInData.accountId });
-        } else {
-          this.setState({ loggedIn: false });
-        }
-      })
-      .catch(error => {});
-  }
+
   render() {
     const getSubmitClass = isSubmitable =>
       className('form-submit', 'btn', 'btn-light', {
@@ -178,7 +192,20 @@ export class Home extends Component {
           {this.state.searchPending ? (
             getLoader()
           ) : (
-            <DancerList dancers={this.state.dancers} />
+            <div className='results-container__content'>
+              {this.state.selectedDancer === null ? (
+                <DancerList
+                  selectDancer={dancer => this.selectDancer(dancer)}
+                  accountId={this.state.accountId}
+                  dancers={this.state.dancers}
+                />
+              ) : (
+                <EventCompSelect
+                  handleClose={() => this.selectDancer(null)}
+                  dancer={this.state.selectedDancer}
+                />
+              )}
+            </div>
           )}
         </section>
       </main>

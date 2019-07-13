@@ -13,6 +13,7 @@ class Account {
     this.firstName = '';
     this.lastName = '';
     this.profileImageUrl = '';
+    // TODO: Remove wsdcId as an unecessary redundancy with wsdcDancer
     this.wsdcId = null;
     this.wsdcDancer = null;
     this.attendances = [];

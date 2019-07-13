@@ -41,7 +41,7 @@ class Dancer {
     this.firstName = config.firstName;
     this.lastName = config.lastName;
     // TODO: Remove this! Make sure that we are getting the correct value
-    this.wsdcId = config.wsdcid;
+    this.wsdcId = config.wsdcId || config.wsdcid;
     this.currentPoints = config.currentPoints;
     this.division = config.division;
     this.record = {};
@@ -67,19 +67,19 @@ class Dancer {
     this.relevance = DEFAULT_RELEVENCE;
     this.qualifiesForNextDivision = false;
     this.divisionRoleQualifies = null;
-    this.Error = false;
+    this.error = false;
     if (config.placements.hasOwnProperty(PLACEMENTS_KEY)) {
       this.processWsdcDivisions(config.placements[PLACEMENTS_KEY]);
     } else {
-      this.Error = 'No west coast swing points.';
-      logger.log(`Dancer ${this.wsdcId} error => ${this.Error}`);
+      this.error = 'No west coast swing points.';
+      logger.log(`Dancer ${this.wsdcId} error => ${this.error}`);
     }
   }
   toJSON() {
     return {
       firstName: this.firstName,
       lastName: this.lastName,
-      wsdcid: this.wsdcId,
+      wsdcId: this.wsdcId,
       currentPoints: this.currentPoints,
       division: this.division,
       role: this.role,

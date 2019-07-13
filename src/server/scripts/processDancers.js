@@ -62,8 +62,8 @@ let processDancerValues = results => {
                 return;
               let dancer = new dancerDef();
               dancer.LoadWSDC(result);
-              if (dancer.Error !== false) {
-                logger.log('Found error: ', dancer.Error);
+              if (dancer.error !== false) {
+                logger.log('Found error: ', dancer.error);
                 return;
               }
               logger.log(

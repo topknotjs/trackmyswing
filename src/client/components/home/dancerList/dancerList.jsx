@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 require('./dancerList.scss');
-const defaultProfileImage = require('../../shared/assets/images/profile-default.jpg');
+const defaultProfileImage = require('../../../shared/assets/images/profile-default.jpg');
 export default class DancerList extends Component {
   static propTypes = {
+    accountId: PropTypes.number,
     dancers: PropTypes.array,
+    selectDancer: PropTypes.func,
   };
   constructor(props) {
     super(props);
     this.state = {
+      accountId: props.accountId,
       dancers: props.dancers,
     };
+  }
+  onDancerSelectClicked(dancer) {
+    this.props.selectDancer(dancer);
   }
   render() {
     return (
@@ -22,29 +28,35 @@ export default class DancerList extends Component {
                 <img
                   className='dancer-image'
                   src={
-                    dancer.profileImageUrl
-                      ? dancer.profileImageUrl
+                    dancer.account.profileImageUrl
+                      ? dancer.account.profileImageUrl
                       : defaultProfileImage
                   }
                 />
               </div>
               <div className='dancer-list-item__part row-main'>
                 <p className='dancer-list-item__primary'>
-                  {dancer.firstName} {dancer.lastName}
+                  {dancer.account.firstName} {dancer.account.lastName}
                 </p>
                 {/* // TODO: Create dancer object that has a method for this */}
-                {dancer.hasOwnProperty('accountId') ? (
+                {dancer.account.hasOwnProperty('accountId') ? (
                   <div className='dancer-list-item__secondary'>
-                    <p>Location: {dancer.location}</p>
+                    <p>Location: {dancer.account.location}</p>
                   </div>
                 ) : (
                   <div className='dancer-list-item__secondary'>
-                    <p>WSDC: {dancer.wsdcid}</p>
+                    <p>WSDC: {dancer.account.wsdcId}</p>
                   </div>
                 )}
               </div>
               <div className='dancer-list-item__part row-actions'>
-                <button>Request Partner</button>
+                {this.state.accountId !== dancer.account.accountId ? (
+                  <button onClick={e => this.onDancerSelectClicked(dancer)}>
+                    Request Partner
+                  </button>
+                ) : (
+                  ''
+                )}
               </div>
             </li>
           );

@@ -7,20 +7,20 @@ const router = express.Router();
 router.get('/:wsdcid', async function(req, res) {
 	// TODO: Go to firebase first before going here
 	try {
-		const dancer = await dancerService.getDancer(req.params.wsdcid);
+		const dancer = await dancerService.getDancer(req.params.wsdcId);
 		res.send(dancer.toJSON());
 	} catch (error) {
-		logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
+		logger.error(`Get dancer ${req.params.wsdcId} error: ${error}`);
 		res.send({ error });
 	}
 });
 router.get('/wsdc/:wsdcid', async function(req, res) {
 	// TODO: Go to firebase first before going here
 	try {
-		const dancer = await dancerService.getWsdcDancer(req.params.wsdcid);
+		const dancer = await dancerService.getWsdcDancer(req.params.wsdcId);
 		res.send(dancer.toJSON());
 	} catch (error) {
-		logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
+		logger.error(`Get dancer ${req.params.wsdcId} error: ${error}`);
 		res.send({ error });
 	}
 });
@@ -28,10 +28,10 @@ router.get('/wsdc/:wsdcid', async function(req, res) {
 router.get('/wsdc/process/:wsdcid', async function(req, res) {
 	// TODO: Go to firebase first before going here
 	try {
-		const dancer = await dancerService.processWsdcDancer(req.params.wsdcid);
+		const dancer = await dancerService.processWsdcDancer(req.params.wsdcId);
 		res.send(dancer.toJSON());
 	} catch (error) {
-		logger.error(`Get dancer ${req.params.wsdcid} error: ${error}`);
+		logger.error(`Get dancer ${req.params.wsdcId} error: ${error}`);
 		res.send({ error });
 	}
 });
